@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/aplicativos/{id}/edit', [AplicativoController::class,'edit'])->name('aplicativos.edit');   // Se envia el id del aplicativo a editar en la ruta para editar 
     Route::put('/aplicativos/{id}', [AplicativoController::class,'update'])->name('aplicativos.update');   // Se envia el id del aplicativo a actualizar en la ruta para actualizar
     Route::delete('/aplicativos/{id}', [AplicativoController::class,'destroy'])->name('aplicativos.destroy');   // Se envia el id del aplicativo a eliminar en la ruta para eliminar
-    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
+    Route::get('/search', [AplicativoController::class, 'index'])->name('search.index');
 });
         require __DIR__.'/auth.php';
 
