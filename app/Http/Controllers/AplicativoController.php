@@ -14,9 +14,12 @@ class AplicativoController extends Controller
      * @phpstan-ignore-next-line
      */
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $aplicativos = Aplicativo::latest('updated_at')->get();
+
+        $perPage = $request->get('perPage', 5);  // Define el numero de registros por pagina
+
+        $aplicativos = Aplicativo::latest('updated_at')->paginate($perPage)->withQueryString();
 
         return view('aplicativos.index', ['aplicativos' => $aplicativos]);
     }

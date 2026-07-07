@@ -130,26 +130,69 @@
             <!-- Pagination -->
 
             <div class="flex flex-col md:flex-row justify-between items-center p-4 bg-[#0c101b] gap-4">
-                <span class="text-sm text-slate-400">
-                    Mostrando <span class="font-semibold text-white">{{ count($aplicativos) }}</span> aplicativos
-                </span>
+                <p class="text-sm text-slate-400 ">
+                    Mostrando <span class="font-semibold text-white"> {{ $aplicativos->firstItem() }} - {{ $aplicativos->lastItem() }} de {{ $aplicativos->total() }}</span> resultados
+                </p>
 
-            <nav class="flex items-center gap-x-1" aria-label="Pagination">
-            <button type="button" class="min-h-9.5 min-w-9.5 py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg text-gray-500 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700 disabled:opacity-50 disabled:pointer-events-none" aria-label="Previous">
-                <svg class="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                <span class="sr-only">Previous</span>
-            </button>
-            <div class="flex items-center">
-                <span class="min-h-9.5 min-w-9.5 flex justify-center items-center text-gray-500 dark:text-neutral-200 py-2 px-3 text-sm rounded-lg">1</span>
-                {{-- <span class="min-h-9.5 flex justify-center items-center text-gray-500 dark:text-neutral-400 py-2 px-1.5 text-sm">of</span>
-                <span class="min-h-9.5 flex justify-center items-center text-gray-500 dark:text-neutral-400 py-2 px-1.5 text-sm">3</span> --}}
+            <div class="flex items-center gap-2">
+                <p class="text-sm text-slate-400">Registros por página:</p>
+                <select id="perPage" name="perPage" class="form-select rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                    <option value="5" @selected(request('perPage') == 5) >5</option>     <!-- selected(condition) selecciona el valor por defecto de la peticion y se queda con el valor si no se cambia -->
+                    <option value="10" @selected(request('perPage') == 10)>10</option>
+                </select>
             </div>
-            <button type="button" class="min-h-9.5 min-w-9.5 py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg text-gray-500 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700 disabled:opacity-50 disabled:pointer-events-none" aria-label="Next">
-                <span class="sr-only">Next</span>
-                <svg class="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const select = document.getElementById('perPage');
+                    const currentUrl = new URL(window.location.href);
+
+                    select.addEventListener('change', function (e) {
+                        // Obtener el nuevo valor de registros por página
+                        const perPage = e.target.value;
+                        
+                        // Actualizar el parámetro 'perPage' en la URL
+                        currentUrl.searchParams.set('perPage', perPage);
+                        
+                        // Navegar a la nueva URL con el parámetro actualizado
+                        window.location.href = currentUrl.toString();
+                    });
+                });
+            </script>
+
+            <nav aria-label="Paginacion">
+                <div class="inline-flex items-center rounded-lg overflow-hidden shadow-md p-4 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300" role="group">
+
+                    {{-- Botón Anterior --}}
+                    @if ($aplicativos->onFirstPage())
+                        <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
+                        </span>
+                    @else
+                        <a href="{{ $aplicativos->previousPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
+                        </a>
+                    @endif
+
+                    {{-- Indicador de página --}}
+                    <div class="inline-flex items-center justify-center h-11 px-6 bg-slate-800 border-x border-slate-700/50 text-base font-medium text-slate-300 select-none">
+                        <span class="text-slate-400">{{ $aplicativos->currentPage() }} de {{ $aplicativos->lastPage() }}</span>
+                    </div>
+
+                    {{-- Botón Siguiente --}}
+                    @if ($aplicativos->hasMorePages())
+                        <a href="{{ $aplicativos->nextPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
+                        </a>
+                    @else
+                        <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
+                        </span>
+                    @endif
+
+                </div>
             </nav>
-            
+
             <!-- End Pagination -->
 
             </div>
@@ -237,7 +280,7 @@
                         <td colspan="10" class="px-6 py-8 text-center text-slate-500">
                             <div class="flex flex-col items-center justify-center space-y-2">
                                 <svg class="w-8 h-8 text-slate-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2 2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                                <p class="text-base font-medium text-slate-400">¡Falta listado de aplicativos!</p>
+                                <p class="text-base font-medium text-slate-400">No se han encontrado registros</p>
                             </div>
                         </td>
                     </tr>

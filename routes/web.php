@@ -45,27 +45,12 @@ Route::middleware('auth')->group(function () {
         si cambia la url no hay problema con el redirect 
     */
 
-
-    Route::get('/test1/{name?}', function ($name = 'test1') {      
-            /* 
-                el signo ? indica que el parametro es opcional si no se le pasa nada, 
-                se toma el valor por defecto en la funcion (si existe)
-            */
-            if($name == 'test2') {
-                return redirect()->route('test.index'); /* redirect pero usando el nombre de la ruta, 
-                                                        no la url como tal, mejor para el manejo de errores o cambios en la url 
-                                                        ya que si cambia la url no hay problema con el redirect. */
-            }    
-        
-            return 'Esta es mi vista '. $name .' en Laravel';
-    });
-
     Route::get('/aplicativos', [AplicativoController::class, 'index'])->name('aplicativos.index');
     Route::post('/aplicativos', [AplicativoController::class, 'store'])->name('aplicativos.store');
     Route::get('/aplicativos/{id}/edit', [AplicativoController::class,'edit'])->name('aplicativos.edit');   // Se envia el id del aplicativo a editar en la ruta para editar 
     Route::put('/aplicativos/{id}', [AplicativoController::class,'update'])->name('aplicativos.update');   // Se envia el id del aplicativo a actualizar en la ruta para actualizar
     Route::delete('/aplicativos/{id}', [AplicativoController::class,'destroy'])->name('aplicativos.destroy');   // Se envia el id del aplicativo a eliminar en la ruta para eliminar
-    Route::get('/search', [AplicativoController::class, 'index'])->name('search.index');
+
 });
         require __DIR__.'/auth.php';
 
@@ -82,5 +67,17 @@ Route::middleware('auth')->group(function () {
     
 */
 
-
+    Route::get('/test1/{name?}', function ($name = 'test1') {      
+            /* 
+                el signo ? indica que el parametro es opcional si no se le pasa nada, 
+                se toma el valor por defecto en la funcion (si existe)
+            */
+            if($name == 'test2') {
+                return redirect()->route('test.index'); /* redirect pero usando el nombre de la ruta, 
+                                                        no la url como tal, mejor para el manejo de errores o cambios en la url 
+                                                        ya que si cambia la url no hay problema con el redirect. */
+            }    
+        
+            return 'Esta es mi vista '. $name .' en Laravel';
+    });
 
