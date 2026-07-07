@@ -19,7 +19,7 @@ class AplicativoController extends Controller
 
         $perPage = $request->get('perPage', 5);  // Define el numero de registros por pagina
 
-        $aplicativos = Aplicativo::latest('updated_at')->paginate($perPage)->withQueryString();
+        $aplicativos = Aplicativo::latest('updated_at')->paginate($perPage);     // withQueryString() es un método de Eloquent que retorna un array con los parámetros de la consulta 
 
         return view('aplicativos.index', ['aplicativos' => $aplicativos]);
     }

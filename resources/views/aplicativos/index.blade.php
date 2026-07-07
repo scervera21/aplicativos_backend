@@ -120,19 +120,89 @@
         </div>
         <br><br>
 
-            <div class="input max-w-xs flex justify-end">
-                <span class="text-base-content/80 my-auto me-3 size-5 shrink-0"></span>
-                <input type="search" class="grow border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" placeholder="Buscar" id="leadingIconDefault" />
-            </div>
-        <br>
-        <div class="shadow-md rounded-lg border border-slate-800 bg-[#0f172a] overflow-x-auto">
-            
-            <!-- Pagination -->
+        <div class="flex justify-end items-center mb-4">
+                
+            <button id="dropdownDefault" data-dropdown-toggle="dropdown" class="cursor-pointer rounded border border-transparent bg-transparent text-gray-800 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition active:bg-black/20 dark:active:bg-white/20 py-2 px-3 flex text-base font-normal justify-center items-center" type="button">
+                <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12C7.10457 12 8 11.1046 8 10C8 8.89543 7.10457 8 6 8C4.89543 8 4 8.89543 4 10C4 11.1046 4.89543 12 6 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6 4V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6 12V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 18C13.1046 18 14 17.1046 14 16C14 14.8954 13.1046 14 12 14C10.8954 14 10 14.8954 10 16C10 17.1046 10.8954 18 12 18Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 4V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 18V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M18 9C19.1046 9 20 8.10457 20 7C20 5.89543 19.1046 5 18 5C16.8954 5 16 5.89543 16 7C16 8.10457 16.8954 9 18 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M18 4V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M18 9V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg> Filtrar </button>
 
-            <div class="flex flex-col md:flex-row justify-between items-center p-4 bg-[#0c101b] gap-4">
-                <p class="text-sm text-slate-400 ">
-                    Mostrando <span class="font-semibold text-white"> {{ $aplicativos->firstItem() }} - {{ $aplicativos->lastItem() }} de {{ $aplicativos->total() }}</span> resultados
-                </p>
+
+            <!-- Menu Desplegable de Filtros -->
+
+            <div class="m-10 w-screen max-w-screen-md">
+                <div class="flex flex-col">
+                    <div id="dropdown" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
+                        
+                        <form action="" method="GET">
+
+                            <div class="flex flex-col">
+                                <x-input-label for="aplicativo" class="text-sm font-medium text-stone-600">Aplicativo</x-input-label>
+                                <x-text-input id="aplicativo" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="text" name="aplicativo" :value="old('aplicativo')" />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <x-input-label for="estatus" class="text-sm font-medium text-stone-600">Estatus</x-input-label>
+                                <select id="estatus" name="estatus" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" :value="old('estatus')">
+                                    <option disabled selected>Elige una opción</option>
+                                    <option value="planificado" @selected(old('estatus') == 'planificado')>Planificado</option>
+                                    <option value="en desarrollo" @selected(old('estatus') == 'en desarrollo')>Desarrollo</option>
+                                    <option value="pruebas" @selected(old('estatus') == 'pruebas')>Pruebas</option>
+                                    <option value="culminado" @selected(old('estatus') == 'culminado')>Culminado</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <x-input-label for="fecha_inicio" class="text-sm font-medium text-stone-600">Fecha Inicio</x-input-label>
+                                <x-text-input id="fecha_inicio" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="date" name="fecha_inicio" :value="old('fecha_inicio')" />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <x-input-label for="fecha_final" class="text-sm font-medium text-stone-600">Fecha Final</x-input-label>
+                                <x-text-input id="fecha_final" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="date" name="fecha_final" :value="old('fecha_final')" />
+                            </div>
+
+                            <div class="flex flex-col">
+                                <x-input-label for="pap" class="text-sm font-medium text-stone-600">PAP</x-input-label>
+                                <input id="pap" type="checkbox" name="pap" @checked(old('pap'))
+                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm">
+                                <label for="pap" class="form-check-label ml-2 text-sm text-gray-600 dark:text-gray-400 font-medium cursor-pointer">Si</label>
+
+                                <input id="pap" type="checkbox" name="pap" @checked(old('pap'))
+                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm">
+                                <label for="pap" class="form-check-label ml-2 text-sm text-gray-600 dark:text-gray-400 font-medium cursor-pointer">No</label>
+                            </div>
+
+                            <div class="mt-6 grid w-full grid-cols-2 justify-end space-x-4 md:flex">
+                                <button type="reset"class="rounded-lg bg-gray-200 px-2 py-4 font-medium text-gray-700 outline-none hover:opacity-80 focus:ring">Limpiar</button>
+                                <button type="submit" class="rounded-lg bg-black px-2 py-4 font-medium text-white outline-none hover:opacity-80 focus:ring">Filtrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <script>
+                window.addEventListener("load", function(event) {
+                    document.querySelector('[data-dropdown-toggle="dropdown"]').click();
+                });
+            </script> 
+
+        <!-- Pagination -->
+
+        <div class="flex flex-col md:flex-row justify-between items-center p-2 bg-[#0c101b] gap-4">
+            <p class="text-sm text-slate-400 ml-3">
+                Mostrando <span class="font-semibold text-white"> {{ $aplicativos->firstItem() }} - {{ $aplicativos->lastItem() }} de {{ $aplicativos->total() }}</span> resultados
+            </p>
 
             <div class="flex items-center gap-2">
                 <p class="text-sm text-slate-400">Registros por página:</p>
@@ -161,7 +231,7 @@
             </script>
 
             <nav aria-label="Paginacion">
-                <div class="inline-flex items-center rounded-lg overflow-hidden shadow-md p-4 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300" role="group">
+                <div class="inline-flex items-center rounded-lg overflow-hidden mr-2" role="group">
 
                     {{-- Botón Anterior --}}
                     @if ($aplicativos->onFirstPage())
@@ -192,10 +262,10 @@
 
                 </div>
             </nav>
+        </div>
 
-            <!-- End Pagination -->
+        <!-- End Pagination -->
 
-            </div>
             <table class="w-full text-sm text-slate-300">
                 <thead class="text-sm text-slate-400 bg-[#1e293b]/80 border-b border-slate-800 font-semibold uppercase tracking-wider">
                     <tr>
@@ -287,6 +357,5 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
     </div>
 </x-app-layout>

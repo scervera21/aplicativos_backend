@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 // use App\Models\Aplicativo;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AplicativoController;
-use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/aplicativos/{id}/edit', [AplicativoController::class,'edit'])->name('aplicativos.edit');   // Se envia el id del aplicativo a editar en la ruta para editar 
     Route::put('/aplicativos/{id}', [AplicativoController::class,'update'])->name('aplicativos.update');   // Se envia el id del aplicativo a actualizar en la ruta para actualizar
     Route::delete('/aplicativos/{id}', [AplicativoController::class,'destroy'])->name('aplicativos.destroy');   // Se envia el id del aplicativo a eliminar en la ruta para eliminar
-
 });
         require __DIR__.'/auth.php';
 
