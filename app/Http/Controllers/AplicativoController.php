@@ -16,10 +16,41 @@ class AplicativoController extends Controller
 
     public function index(Request $request): View
     {
-
         $perPage = $request->get('perPage', 5);  // Define el numero de registros por pagina
 
-        $aplicativos = Aplicativo::latest('updated_at')->paginate($perPage);     // withQueryString() es un método de Eloquent que retorna un array con los parámetros de la consulta 
+        // Iniciar el Query Builder
+        $query = Aplicativo::query();
+
+        // 1. Filtro: Nombre del Aplicativo (búsqueda parcial)
+        if ($request->filled('aplicativo')) {
+            $query->where('aplicativo', 'like', '%' . $request->input('aplicativo') . '%');
+        }
+
+        // 2. Filtro: Estatus (coincidencia exacta)
+        if ($request->filled('estatus')) {
+            $query->where('estatus', $request->input('estatus'));
+        }
+
+        // 3. Filtro: Fecha Inicio (registros que inicien a partir de la fecha seleccionada)
+        if ($request->filled('fecha_inicio')) {
+            $query->where('fecha_inicio', '>=', $request->input('fecha_inicio'));
+        }
+
+        // 4. Filtro: Fecha Final (registros que terminen antes o en la fecha seleccionada)
+        if ($request->filled('fecha_final')) {
+            $query->where('fecha_final', '<=', $request->input('fecha_final'));
+        }
+
+        // 5. Filtro: PAP (campo booleano)
+        // Usamos comparación estricta contra vacíos para incluir el valor '0' (No) como válido
+        if ($request->has('pap') && $request->input('pap') !== null && $request->input('pap') !== '') {
+            $query->where('pap', (bool)$request->input('pap'));
+        }
+
+        // Paginamos conservando todos los parámetros de la URL actual
+        $aplicativos = $query->latest('updated_at')
+                             ->paginate($perPage)
+                             ->appends($request->query());
 
         return view('aplicativos.index', ['aplicativos' => $aplicativos]);
     }

@@ -120,82 +120,115 @@
         </div>
         <br><br>
 
-        <div class="flex justify-end items-center mb-4">
+
+        <!-- Botón e Interfaz de Filtros con AlpineJS -->
+        @php
+            // Determinamos si hay filtros activos para que el dropdown inicie abierto
+            $hasActiveFilters = request()->filled('aplicativo') || 
+                                 request()->filled('estatus') || 
+                                 request()->filled('fecha_inicio') || 
+                                 request()->filled('fecha_final') || 
+                                 (request()->has('pap') && request('pap') !== '');
+        @endphp
+
+        <div class="relative flex justify-end items-center mb-6" x-data="{ open: {{ $hasActiveFilters ? 'true' : 'false' }} }">
+            
+            <!-- Botón para abrir/cerrar filtros -->
+            <button @click="open = !open" 
+                    class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition active:bg-gray-100 dark:active:bg-gray-600 py-2 px-2.5 flex text-sm font-medium justify-center items-center shadow-sm" 
+                    type="button">
+                <svg class="mr-2 text-gray-500 dark:text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12C7.10457 12 8 11.1046 8 10C8 8.89543 7.10457 8 6 8C4.89543 8 4 8.89543 4 10C4 11.1046 4.89543 12 6 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M6 4V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M6 12V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 18C13.1046 18 14 17.1046 14 16C14 14.8954 13.1046 14 12 14C10.8954 14 10 14.8954 10 16C10 17.1046 10.8954 18 12 18Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 4V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 18V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M18 9C19.1046 9 20 8.10457 20 7C20 5.89543 19.1046 5 18 5C16.8954 5 16 5.89543 16 7C16 8.10457 16.8954 9 18 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M18 4V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M18 9V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Filtrar</span>
+                <!-- Indicador de cantidad de filtros activos -->
+                @if($hasActiveFilters)
+                    <span class="ml-2 bg-indigo-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">!</span>
+                @endif
+            </button>
+
+            <!-- Menú Desplegable Absoluto de Filtros -->
+            <div x-show="open" 
+                 @click.outside="open = false" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="absolute right-0 top-full z-50 w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4"
+                 style="display: none;">
                 
-            <button id="dropdownDefault" data-dropdown-toggle="dropdown" class="cursor-pointer rounded border border-transparent bg-transparent text-gray-800 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition active:bg-black/20 dark:active:bg-white/20 py-2 px-3 flex text-base font-normal justify-center items-center" type="button">
-                <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 12C7.10457 12 8 11.1046 8 10C8 8.89543 7.10457 8 6 8C4.89543 8 4 8.89543 4 10C4 11.1046 4.89543 12 6 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M6 4V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M6 12V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 18C13.1046 18 14 17.1046 14 16C14 14.8954 13.1046 14 12 14C10.8954 14 10 14.8954 10 16C10 17.1046 10.8954 18 12 18Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 4V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 18V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M18 9C19.1046 9 20 8.10457 20 7C20 5.89543 19.1046 5 18 5C16.8954 5 16 5.89543 16 7C16 8.10457 16.8954 9 18 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M18 4V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M18 9V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg> Filtrar </button>
+                <form action="{{ route('aplicativos.index') }}" method="GET">
+                    @csrf
+                    <!-- Mantenemos el tamaño de la paginación actual -->
+                    <input type="hidden" name="perPage" value="{{ request('perPage', 5) }}">
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                        <!-- Filtro: Aplicativo -->
+                        <div class="flex flex-col">
+                            <x-input-label for="aplicativo_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Nombre del Aplicativo</x-input-label>
+                            <x-text-input id="aplicativo_filter" class="mt-1 block w-full text-sm" type="text" name="aplicativo" value="{{ request('aplicativo') }}" placeholder="Buscar por nombre..." />
+                        </div>
 
-            <!-- Menu Desplegable de Filtros -->
+                        <!-- Filtro: Estatus -->
+                        <div class="flex flex-col">
+                            <x-input-label for="estatus_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Estatus</x-input-label>
+                            <select id="estatus_filter" name="estatus" class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                <option value="">Todos los estatus</option>
+                                <option value="planificado" @selected(request('estatus') == 'planificado')>Planificado</option>
+                                <option value="en desarrollo" @selected(request('estatus') == 'en desarrollo')>Desarrollo</option>
+                                <option value="pruebas" @selected(request('estatus') == 'pruebas')>Pruebas</option>
+                                <option value="culminado" @selected(request('estatus') == 'culminado')>Culminado</option>
+                            </select>
+                        </div>
 
-            <div class="m-10 w-screen max-w-screen-md">
-                <div class="flex flex-col">
-                    <div id="dropdown" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
-                        
-                        <form action="" method="GET">
+                        <!-- Filtro: Fecha Inicio -->
+                        <div class="flex flex-col">
+                            <x-input-label for="fecha_inicio_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Fecha Inicio</x-input-label>
+                            <x-text-input id="fecha_inicio_filter" class="mt-1 block w-full text-sm" type="date" name="fecha_inicio" value="{{ request('fecha_inicio') }}" />
+                        </div>
 
-                            <div class="flex flex-col">
-                                <x-input-label for="aplicativo" class="text-sm font-medium text-stone-600">Aplicativo</x-input-label>
-                                <x-text-input id="aplicativo" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="text" name="aplicativo" :value="old('aplicativo')" />
-                            </div>
+                        <!-- Filtro: Fecha Final -->
+                        <div class="flex flex-col">
+                            <x-input-label for="fecha_final_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Fecha Final</x-input-label>
+                            <x-text-input id="fecha_final_filter" class="mt-1 block w-full text-sm" type="date" name="fecha_final" value="{{ request('fecha_final') }}" />
+                        </div>
 
-                            <div class="flex flex-col">
-                                <x-input-label for="estatus" class="text-sm font-medium text-stone-600">Estatus</x-input-label>
-                                <select id="estatus" name="estatus" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" :value="old('estatus')">
-                                    <option disabled selected>Elige una opción</option>
-                                    <option value="planificado" @selected(old('estatus') == 'planificado')>Planificado</option>
-                                    <option value="en desarrollo" @selected(old('estatus') == 'en desarrollo')>Desarrollo</option>
-                                    <option value="pruebas" @selected(old('estatus') == 'pruebas')>Pruebas</option>
-                                    <option value="culminado" @selected(old('estatus') == 'culminado')>Culminado</option>
-                                </select>
-                            </div>
-
-                            <div class="flex flex-col">
-                                <x-input-label for="fecha_inicio" class="text-sm font-medium text-stone-600">Fecha Inicio</x-input-label>
-                                <x-text-input id="fecha_inicio" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="date" name="fecha_inicio" :value="old('fecha_inicio')" />
-                            </div>
-
-                            <div class="flex flex-col">
-                                <x-input-label for="fecha_final" class="text-sm font-medium text-stone-600">Fecha Final</x-input-label>
-                                <x-text-input id="fecha_final" class="mt-1 block w-full rounded-md border border-gray-100 bg-gray-100 px-2 py-2 shadow-sm outline-none" type="date" name="fecha_final" :value="old('fecha_final')" />
-                            </div>
-
-                            <div class="flex flex-col">
-                                <x-input-label for="pap" class="text-sm font-medium text-stone-600">PAP</x-input-label>
-                                <input id="pap" type="checkbox" name="pap" @checked(old('pap'))
-                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm">
-                                <label for="pap" class="form-check-label ml-2 text-sm text-gray-600 dark:text-gray-400 font-medium cursor-pointer">Si</label>
-
-                                <input id="pap" type="checkbox" name="pap" @checked(old('pap'))
-                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm">
-                                <label for="pap" class="form-check-label ml-2 text-sm text-gray-600 dark:text-gray-400 font-medium cursor-pointer">No</label>
-                            </div>
-
-                            <div class="mt-6 grid w-full grid-cols-2 justify-end space-x-4 md:flex">
-                                <button type="reset"class="rounded-lg bg-gray-200 px-2 py-4 font-medium text-gray-700 outline-none hover:opacity-80 focus:ring">Limpiar</button>
-                                <button type="submit" class="rounded-lg bg-black px-2 py-4 font-medium text-white outline-none hover:opacity-80 focus:ring">Filtrar</button>
-                            </div>
-                        </form>
+                        <!-- Filtro: PAP (Pase a Producción) -->
+                        <div class="flex flex-col md:col-span-2">
+                            <x-input-label for="pap_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">PAP</x-input-label>
+                            <select id="pap_filter" name="pap" class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                <option value="">Todos (Sí / No)</option>
+                                <option value="true" @selected(request('pap') === 'true')>Sí</option>
+                                <option value="false" @selected(request('pap') === 'false')>No</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="mt-6 flex justify-end space-x-3 border-t border-gray-100 dark:border-gray-700 pt-4">
+                        <a href="{{ route('aplicativos.index', ['perPage' => request('perPage', 5)]) }}" 
+                           class="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition shadow-sm">
+                            Limpiar
+                        </a>
+                        <button type="submit" 
+                                class="rounded-md bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition shadow-sm">
+                            Aplicar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-
-            <script>
-                window.addEventListener("load", function(event) {
-                    document.querySelector('[data-dropdown-toggle="dropdown"]').click();
-                });
-            </script> 
+ 
 
         <!-- Pagination -->
 
