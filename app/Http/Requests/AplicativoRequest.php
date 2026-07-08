@@ -20,8 +20,13 @@ class AplicativoRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $papChecked = $this->has('pap');
+
         $this->merge([
-            'pap' => $this->has('pap'),
+            'pap'         => $papChecked,
+            // Si PAP = No, forzamos pap_estatus a null sin importar si el campo llega o no al request
+            // (los campos disabled en HTML no se envían en el formulario)
+            'pap_estatus' => $papChecked ? $this->input('pap_estatus') : null,
         ]);
     }
 
@@ -48,7 +53,7 @@ class AplicativoRequest extends FormRequest
             'fecha_final' => ['bail', 'nullable', 'date', 'after:fecha_inicio'],
             'estatus' => ['bail', 'required'],
             'pap' => ['bail', 'nullable','boolean'],
-            'pap_estatus' => ['bail', 'required_if:pap,true', 'between:4,60',],
+            'pap_estatus' => ['bail', 'nullable', 'required_if:pap,true', 'between:4,60'],
         ];
     }
 

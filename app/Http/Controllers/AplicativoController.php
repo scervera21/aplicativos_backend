@@ -42,9 +42,8 @@ class AplicativoController extends Controller
         }
 
         // 5. Filtro: PAP (campo booleano)
-        // Usamos comparación estricta contra vacíos para incluir el valor '0' (No) como válido
         if ($request->has('pap') && $request->input('pap') !== null && $request->input('pap') !== '') {
-            $query->where('pap', (bool)$request->input('pap'));
+            $query->where('pap', filter_var($request->input('pap'), FILTER_VALIDATE_BOOLEAN));
         }
 
         // Paginamos conservando todos los parámetros de la URL actual
