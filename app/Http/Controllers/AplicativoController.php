@@ -51,7 +51,20 @@ class AplicativoController extends Controller
                              ->paginate($perPage)
                              ->appends($request->query());
 
-        return view('aplicativos.index', ['aplicativos' => $aplicativos]);
+        // Obtenemos todos los parámetros
+        $queryparams = $request->except(['perPage']);
+
+        // Contamos excluyendo los parámetros de paginación, los vacíos y el token
+        $hasActiveFilters = array_filter($queryparams, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        // Contamos los filtros activos
+        $countFilters = count($hasActiveFilters);
+
+        // @dd($hasActiveFilters, $countFilters);
+
+        return view('aplicativos.index', ['aplicativos' => $aplicativos, 'countFilters' => $countFilters]);
     }
 
     /**

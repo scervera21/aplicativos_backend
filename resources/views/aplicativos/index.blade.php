@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="py-12">
         <div class="mx-auto sm:px-6">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg pt-5 pb-10">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg pt-3 pb-10">
                 <div class="p-6 text-gray-900 dark:text-gray-100 text-center">
                     <h2 class="text-xl font-semibold mb-6">{{ __("Registro de Aplicativos") }}</h2>
 
@@ -118,7 +118,7 @@
                 </div>
             </div>
         </div>
-        <br><br>
+        <br>
 
 
         <!-- Botón e Interfaz de Filtros con AlpineJS -->
@@ -131,7 +131,7 @@
                                  (request()->has('pap') && request('pap') !== '');
         @endphp
 
-        <div class="relative flex justify-end items-center mb-6" x-data="{ open: {{ $hasActiveFilters ? 'true' : 'false' }} }">
+        <div class="relative flex justify-end items-center mb-3" x-data="{ open: {{ $hasActiveFilters ? 'true' : 'false' }} }">
             
             <!-- Botón para abrir/cerrar filtros -->
             <button @click="open = !open" 
@@ -150,8 +150,8 @@
                 </svg>
                 <span>Filtrar</span>
                 <!-- Indicador de cantidad de filtros activos -->
-                @if($hasActiveFilters)
-                    <span class="ml-2 bg-indigo-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">!</span>
+                @if($countFilters > 0)
+                    <span class="ml-2 bg-indigo-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">{{ $countFilters }}</span>
                 @endif
             </button>
 
@@ -164,23 +164,22 @@
                  x-transition:leave="transition ease-in duration-75"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-95"
-                 class="absolute right-0 top-full z-50 w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4"
+                 class="absolute right-0 top-full z-50 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4"
                  style="display: none;">
                 
                 <form action="{{ route('aplicativos.index') }}" method="GET">
-                    @csrf
                     <!-- Mantenemos el tamaño de la paginación actual -->
                     <input type="hidden" name="perPage" value="{{ request('perPage', 5) }}">
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    <div class="grid grid-cols-1 w-full md:grid-cols-6 gap-4 text-left items-end">
                         <!-- Filtro: Aplicativo -->
-                        <div class="flex flex-col">
+                        <div class="flex flex-col md:col-span-2">
                             <x-input-label for="aplicativo_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Nombre del Aplicativo</x-input-label>
                             <x-text-input id="aplicativo_filter" class="mt-1 block w-full text-sm" type="text" name="aplicativo" value="{{ request('aplicativo') }}" placeholder="Buscar por nombre..." />
                         </div>
 
                         <!-- Filtro: Estatus -->
-                        <div class="flex flex-col">
+                        <div class="flex flex-col md:col-span-1">
                             <x-input-label for="estatus_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Estatus</x-input-label>
                             <select id="estatus_filter" name="estatus" class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                                 <option value="">Todos los estatus</option>
@@ -192,19 +191,19 @@
                         </div>
 
                         <!-- Filtro: Fecha Inicio -->
-                        <div class="flex flex-col">
+                        <div class="flex flex-col md:col-span-1">
                             <x-input-label for="fecha_inicio_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Fecha Inicio</x-input-label>
                             <x-text-input id="fecha_inicio_filter" class="mt-1 block w-full text-sm" type="date" name="fecha_inicio" value="{{ request('fecha_inicio') }}" />
                         </div>
 
                         <!-- Filtro: Fecha Final -->
-                        <div class="flex flex-col">
+                        <div class="flex flex-col md:col-span-1">
                             <x-input-label for="fecha_final_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Fecha Final</x-input-label>
                             <x-text-input id="fecha_final_filter" class="mt-1 block w-full text-sm" type="date" name="fecha_final" value="{{ request('fecha_final') }}" />
                         </div>
 
                         <!-- Filtro: PAP (Pase a Producción) -->
-                        <div class="flex flex-col md:col-span-2">
+                        <div class="flex flex-col md:col-span-1">
                             <x-input-label for="pap_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">PAP</x-input-label>
                             <select id="pap_filter" name="pap" class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                                 <option value="">Todos (Sí / No)</option>
@@ -228,79 +227,79 @@
                 </form>
             </div>
         </div>
- 
 
         <!-- Pagination -->
+        
+        <div class="overflow-auto rounded-lg border border-slate-700/50 shadow-xl">
+            <div class="w-full flex md:flex-row justify-between items-center p-2 bg-[#0c101b] gap-4">
+                <p class="text-sm text-slate-400 ml-3">
+                    Mostrando <span class="font-semibold text-white"> {{ $aplicativos->firstItem() }} - {{ $aplicativos->lastItem() }} de {{ $aplicativos->total() }}</span> resultados
+                </p>
 
-        <div class="flex flex-col md:flex-row justify-between items-center p-2 bg-[#0c101b] gap-4">
-            <p class="text-sm text-slate-400 ml-3">
-                Mostrando <span class="font-semibold text-white"> {{ $aplicativos->firstItem() }} - {{ $aplicativos->lastItem() }} de {{ $aplicativos->total() }}</span> resultados
-            </p>
+                <div class="flex items-center gap-2">
+                    <p class="text-sm text-slate-400">Registros por página:</p>
+                    <select id="perPage" name="perPage" class="form-select rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        <option value="5" @selected(request('perPage') == 5) >5</option>     <!-- selected(condition) selecciona el valor por defecto de la peticion y se queda con el valor si no se cambia -->
+                        <option value="10" @selected(request('perPage') == 10)>10</option>
+                    </select>
+                </div>
 
-            <div class="flex items-center gap-2">
-                <p class="text-sm text-slate-400">Registros por página:</p>
-                <select id="perPage" name="perPage" class="form-select rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                    <option value="5" @selected(request('perPage') == 5) >5</option>     <!-- selected(condition) selecciona el valor por defecto de la peticion y se queda con el valor si no se cambia -->
-                    <option value="10" @selected(request('perPage') == 10)>10</option>
-                </select>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const select = document.getElementById('perPage');
+                        const currentUrl = new URL(window.location.href);
+
+                        select.addEventListener('change', function (e) {
+                            // Obtener el nuevo valor de registros por página
+                            const perPage = e.target.value;
+                            
+                            // Actualizar el parámetro 'perPage' en la URL
+                            currentUrl.searchParams.set('perPage', perPage);
+                            
+                            // Navegar a la nueva URL con el parámetro actualizado
+                            window.location.href = currentUrl.toString();
+                        });
+                    });
+                </script>
+
+                <nav aria-label="Paginacion">
+                    <div class="inline-flex items-center rounded-lg overflow-hidden mr-2" role="group">
+
+                        {{-- Botón Anterior --}}
+                        @if ($aplicativos->onFirstPage())
+                            <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
+                            </span>
+                        @else
+                            <a href="{{ $aplicativos->previousPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
+                            </a>
+                        @endif
+
+                        {{-- Indicador de página --}}
+                        <div class="inline-flex items-center justify-center h-11 px-6 bg-slate-800 border-x border-slate-700/50 text-base font-medium text-slate-300 select-none">
+                            <span class="text-slate-400">{{ $aplicativos->currentPage() }} de {{ $aplicativos->lastPage() }}</span>
+                        </div>
+
+                        {{-- Botón Siguiente --}}
+                        @if ($aplicativos->hasMorePages())
+                            <a href="{{ $aplicativos->nextPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
+                            </a>
+                        @else
+                            <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
+                            </span>
+                        @endif
+
+                    </div>
+                </nav>
             </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const select = document.getElementById('perPage');
-                    const currentUrl = new URL(window.location.href);
-
-                    select.addEventListener('change', function (e) {
-                        // Obtener el nuevo valor de registros por página
-                        const perPage = e.target.value;
-                        
-                        // Actualizar el parámetro 'perPage' en la URL
-                        currentUrl.searchParams.set('perPage', perPage);
-                        
-                        // Navegar a la nueva URL con el parámetro actualizado
-                        window.location.href = currentUrl.toString();
-                    });
-                });
-            </script>
-
-            <nav aria-label="Paginacion">
-                <div class="inline-flex items-center rounded-lg overflow-hidden mr-2" role="group">
-
-                    {{-- Botón Anterior --}}
-                    @if ($aplicativos->onFirstPage())
-                        <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
-                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
-                        </span>
-                    @else
-                        <a href="{{ $aplicativos->previousPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
-                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.5 18.5 9 12l6.5-6.5"/></svg>
-                        </a>
-                    @endif
-
-                    {{-- Indicador de página --}}
-                    <div class="inline-flex items-center justify-center h-11 px-6 bg-slate-800 border-x border-slate-700/50 text-base font-medium text-slate-300 select-none">
-                        <span class="text-slate-400">{{ $aplicativos->currentPage() }} de {{ $aplicativos->lastPage() }}</span>
-                    </div>
-
-                    {{-- Botón Siguiente --}}
-                    @if ($aplicativos->hasMorePages())
-                        <a href="{{ $aplicativos->nextPageUrl() }}" class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition-colors duration-150">
-                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
-                        </a>
-                    @else
-                        <span class="inline-flex items-center justify-center w-11 h-11 bg-slate-800 text-slate-500 cursor-not-allowed">
-                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.5 5.5 6.5 6.5-6.5 6.5"/></svg>
-                        </span>
-                    @endif
-
-                </div>
-            </nav>
-        </div>
-
-        <!-- End Pagination -->
+            <!-- End Pagination -->
 
             <table class="w-full text-sm text-slate-300">
-                <thead class="text-sm text-slate-400 bg-[#1e293b]/80 border-b border-slate-800 font-semibold uppercase tracking-wider">
+                <thead class="text-sm text-white bg-[#1e293b]/80 border-b border-slate-800 font-semibold uppercase tracking-wider">
                     <tr>
                         {{-- <th scope="col" class="px-6 py-4">ID</th> --}}
                         <th scope="col" class="px-6 py-4">Aplicativo</th>
@@ -317,7 +316,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-800/60">
                     @forelse ( $aplicativos as $aplicativo) 
-                    <tr class="bg-[#0f172a] hover:bg-slate-800/30 transition-colors duration-150">
+                    <tr class="bg-[#0f172a]">
                         {{-- <td class="px-6 py-4 font-medium text-slate-400 whitespace-nowrap">{{ $aplicativo->id }}</td> --}}
                         <td class="px-6 py-4 font-semibold text-white whitespace-nowrap">{{ $aplicativo->aplicativo }}</td>
                         {{-- <td class="px-6 py-4 whitespace-nowrap text-slate-300 text-center">{{ $aplicativo->tipo_software ?: '—' }}</td> --}}
@@ -357,7 +356,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-slate-300 text-center">{{ $aplicativo->pap_estatus ?: '—' }}</td>
                         {{-- <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-sm">{{ \Carbon\Carbon::parse($aplicativo->created_at)->diffForHumans(['parts'=> 2, 'short'=>true ]) }}</td> --}}
-                        <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">{{ \Carbon\Carbon::parse($aplicativo->updated_at)->diffForHumans(['parts'=> 2, 'short'=>true ]) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-xs text-center">{{ \Carbon\Carbon::parse($aplicativo->updated_at)->diffForHumans(['parts'=> 2, 'short'=>true ]) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center justify-center space-x-3">
                                 <a href="{{ route('aplicativos.edit', $aplicativo->id) }}" class="text-white-500 hover:text-white-400"> <!-- Se invoca la ruta edit y se le pasa el id del aplicativo a editar -->
@@ -390,5 +389,6 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
     </div>
 </x-app-layout>
