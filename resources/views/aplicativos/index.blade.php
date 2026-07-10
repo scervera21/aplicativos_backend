@@ -173,7 +173,7 @@
 
                     <div class="grid grid-cols-1 w-full md:grid-cols-6 gap-4 text-left items-end">
                         <!-- Filtro: Aplicativo -->
-                        <div class="flex flex-col md:col-span-2">
+                        <div class="flex flex-col md:col-span-1">
                             <x-input-label for="aplicativo_filter" class="text-xs font-semibold uppercase tracking-wider text-gray-500">Nombre del Aplicativo</x-input-label>
                             <x-text-input id="aplicativo_filter" class="mt-1 block w-full text-sm" type="text" name="aplicativo" value="{{ request('aplicativo') }}" placeholder="Buscar por nombre..." />
                         </div>

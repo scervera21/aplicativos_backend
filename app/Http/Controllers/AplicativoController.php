@@ -31,15 +31,17 @@ class AplicativoController extends Controller
             $query->where('estatus', $request->input('estatus'));
         }
 
-        // 3. Filtro: Fecha Inicio (registros que inicien a partir de la fecha seleccionada)
-        if ($request->filled('fecha_inicio')) {
-            $query->where('fecha_inicio', '>=', $request->input('fecha_inicio'));
-        }
-
-        // 4. Filtro: Fecha Final (registros que terminen antes o en la fecha seleccionada)
-        if ($request->filled('fecha_final')) {
-            $query->where('fecha_final', '<=', $request->input('fecha_final'));
-        }
+    // Filtro de solapamiento: el período del registro cruza con el rango buscado
+    if ($request->filled('fecha_inicio') || $request->filled('fecha_final')) {
+        $query->where(function ($q) use ($request) {
+            if ($request->filled('fecha_inicio')) {
+                $q->whereDate('fecha_final', '>=', $request->input('fecha_inicio'));
+            }
+            if ($request->filled('fecha_final')) {
+                $q->whereDate('fecha_inicio', '<=', $request->input('fecha_final'));
+            }
+        });
+    }
 
         // 5. Filtro: PAP (campo booleano)
         if ($request->has('pap') && $request->input('pap') !== null && $request->input('pap') !== '') {
@@ -52,7 +54,7 @@ class AplicativoController extends Controller
                              ->appends($request->query());
 
         // Obtenemos todos los parámetros
-        $queryparams = $request->except(['perPage']);
+        $queryparams = $request->except(['perPage','page']);
 
         // Contamos excluyendo los parámetros de paginación, los vacíos y el token
         $hasActiveFilters = array_filter($queryparams, function ($value) {
