@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail; // Para que el usuario pueda verificar su correo electrónico
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;     // Para que el usuario a
 // En este caso, el modelo User representa la tabla users de la base de datos.
 // Tiene las mismas columnas que la tabla users de la base de datos.
 
-class User extends Authenticatable implements MustVerifyEmail // : Para implementar la verificación de correo electrónico
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -47,6 +47,27 @@ class User extends Authenticatable implements MustVerifyEmail // : Para implemen
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+/**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     */
+    public function getJWTIdentifier()      // Se usa JWT para obtener el identificador del usuario
+    {   
+        //retorna el id del usuario que se va a incluir en el token
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     */
+    public function getJWTCustomClaims()    // Se usa JWT para obtener el token de autenticación
+    {   
+        //retorna un array con los datos del usuario que se van a incluir en el token
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+        ];
+    }
 
     public function aplicativos() : HasMany // Indica que la función devuelve una relación HasMany
     {
