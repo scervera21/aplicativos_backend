@@ -168,6 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -184,5 +185,9 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
+
+    'jwt_secret' => env('JWT_SECRET'),              // JWT Secret Key
+    'jwt_access_ttl' => env('JWT_ACCESS_TTL', 15),       // tiempo de duración del token de autenticación
+    'jwt_refresh_ttl' => env('JWT_REFRESH_TTL', 10080),      // tiempo de duración del token de refresco
 
 ];

@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('security.servidores', function (Blueprint $table) {
-            $table->foreignId('user_id')->cascadeOnUpdate()->cascadeOnDelete()->constrained(
-                table: 'users',
-                indexName: 'servidores_user_id'
-            );
-        });
+        // Schema::table('security.servidores', function (Blueprint $table) {
+        //     $table->foreignId('user_id')->cascadeOnUpdate()->cascadeOnDelete()->constrained(
+        //         table: 'users',
+        //         indexName: 'servidores_user_id'
+        //     );
+        // });
     }
 
     /**
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('servidores');
+        // Schema::dropIfExists('servidores');
     }
 };

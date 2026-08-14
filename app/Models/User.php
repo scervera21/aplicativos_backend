@@ -7,6 +7,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\HasMany;     // Para que el usuario autenticado pueda tener muchas relaciones con la tabla aplicativos
 
 // Un modelo es como un objeto que representa una tabla de la base de datos. 
@@ -15,7 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;     // Para que el usuario a
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+    protected $table = 'security.users';
+    protected $guard_name = 'api';
 
     /**
      * The attributes that are mass assignable.
@@ -23,9 +27,16 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [         // Las columnas que se pueden llenar masivamente
-        'name',
+        'username',
         'email',
         'password',
+        'first_name',
+        'last_name',
+        'status',
+        'failed_login_attempts',
+        'locked_until',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -44,7 +55,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [                            // Casteo de datos de las columnas
-        'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+        'locked_until' => 'datetime',
         'password' => 'hashed',
     ];
 
@@ -64,9 +76,40 @@ class User extends Authenticatable implements JWTSubject
     {   
         //retorna un array con los datos del usuario que se van a incluir en el token
         return [
-            'name' => $this->name,
+            'username' => $this->username,
             'email' => $this->email,
         ];
+    }
+
+    // Constructor de nombre completo
+
+    protected function FullName()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+    // Verifica si el usuario esta bloqueado
+    protected function isLocked()
+    {
+        return $this->locked_until && $this->locked_until->isFuture();
+    }
+
+    // Bloqueo de usuario por intentos fallidos
+    protected function lock()
+    {
+        $this->failed_login_attempts++;
+        if ($this->failed_login_attempts >= 3) {
+            $this->update(['locked_until' => now()->addMinutes(5)]);
+            $this->update(['status' => false]);
+        }
+    }
+
+    // Desbloqueo de usuario
+    protected function unlock()
+    {
+        $this->update(['failed_login_attempts' => 0]);
+        $this->update(['locked_until' => null]);
+        $this->update(['status' => true]);
     }
 
     public function aplicativos() : HasMany // Indica que la función devuelve una relación HasMany

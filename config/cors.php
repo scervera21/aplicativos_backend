@@ -15,20 +15,20 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],    // Rutas que permitirán el acceso CORS
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],    // Métodos HTTP permitidos
 
-    'allowed_origins' => ['*'],
+    // 'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')),    // Orígenes permitidos
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [],    // Patrones de orígenes permitidos
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],    // Cabeceras permitidas
 
-    'exposed_headers' => [],
+    'exposed_headers' => [],    // Cabeceras expuestas
 
-    'max_age' => 0,
+    'max_age' => 84600,    // Tiempo máximo en segundos que se permite el cacheo de la solicitud
 
-    'supports_credentials' => false,
+    'supports_credentials' => false,    // Permite el uso de credenciales (cookies, autenticación HTTP)
 
 ];

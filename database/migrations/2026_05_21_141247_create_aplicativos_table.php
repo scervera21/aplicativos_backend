@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('security.aplicativos', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained(
-                table: 'users',
-                indexName: 'aplicativos_user_id'
-            );
-        });
+        // Schema::table('security.aplicativos', function (Blueprint $table) {
+        //     $table->foreignId('user_id')->constrained(
+        //         table: 'users',
+        //         indexName: 'aplicativos_user_id'
+        //     );
+        // });
     }
 
     /**
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('aplicativos');
+        // Schema::dropIfExists('aplicativos');
     }
 };
