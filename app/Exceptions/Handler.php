@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -23,6 +25,23 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
+        $this->renderable(function (ValidationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Los datos proporcionados no son válidos.',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+        });
+
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Usuario no Authenticado'
+                ], 401);
+            }
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });

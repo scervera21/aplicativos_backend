@@ -47,6 +47,8 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [           // Las columnas que no se pueden mostrar al usuario
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
     ];
 
     /**

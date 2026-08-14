@@ -11,11 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('security.password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
+        DB::statement('CREATE SCHEMA IF NOT EXISTS security;');
     }
 
     /**
@@ -23,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('security.password_reset_tokens');
+DB::statement('DROP SCHEMA IF EXISTS security CASCADE;');
     }
 };

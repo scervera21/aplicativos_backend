@@ -31,6 +31,11 @@ class Permission extends SpatiePermission
 
     public function roles() : BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_has_permissions', 'permission_id', 'role_id'); 
+        return $this->belongsToMany(
+            Role::class,
+            config('permission.table_names.role_has_permissions', 'security.role_has_permissions'),
+            'permission_id',
+            'role_id'
+        ); 
     }
 }

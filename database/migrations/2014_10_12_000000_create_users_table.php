@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    protected $connection = 'security';
+    // protected $connection = 'security';
     
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('security.users', function (Blueprint $table) {
             $table->id();
             $table->string('username',20)->unique()->index();
             $table->string('email')->unique();
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('security.users');
     }
 };

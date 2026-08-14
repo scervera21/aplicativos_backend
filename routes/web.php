@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/aplicativos/{id}', [AplicativoController::class,'update'])->name('aplicativos.update');   // Se envia el id del aplicativo a actualizar en la ruta para actualizar
     Route::delete('/aplicativos/{id}', [AplicativoController::class,'destroy'])->name('aplicativos.destroy');   // Se envia el id del aplicativo a eliminar en la ruta para eliminar
 });
-        require __DIR__.'/auth.php';
+        // require __DIR__.'/auth.php';
 
 /* 
 

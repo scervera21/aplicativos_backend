@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,18 +20,44 @@ use App\Http\Controllers\AuthController;
 
 Route::prefix('v1')->group(function () {
     
-    Route::post('register', [AuthController::class, 'register']);
 
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
     });
-});
 
-    Route::middleware('auth:jwt')->group(function () {
+    Route::middleware('auth:api')->group(function () {
+
+        Route::post('register', [AuthController::class, 'register']);
 
         Route::prefix('auth')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
             Route::post('refresh', [AuthController::class, 'refresh']);
         });
 
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::post('/', [UserController::class, 'store']);
+            Route::get('/{id}', [UserController::class, 'show']);
+            Route::put('/{id}', [UserController::class, 'update']);
+            Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
+
+        Route::prefix('roles')->group(function () {
+            Route::get('/', [RoleController::class, 'index']);
+            Route::post('/', [RoleController::class, 'store']);
+            Route::get('/{id}', [RoleController::class, 'show']);
+            Route::post('/{id}/update', [RoleController::class, 'update']);
+            Route::post('/{id}/delete', [RoleController::class, 'destroy']);
+        });
+
+        Route::prefix('permissions')->group(function () {
+            Route::get('/', [PermissionController::class, 'index']);
+            Route::post('/', [PermissionController::class, 'store']);
+            Route::get('/{id}', [PermissionController::class, 'show']);
+            Route::post('/{id}/update', [PermissionController::class, 'update']);
+            Route::post('/{id}/delete', [PermissionController::class, 'destroy']);
+        });
+
     });
+
+});
