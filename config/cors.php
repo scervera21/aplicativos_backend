@@ -4,31 +4,40 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cross-Origin Resource Sharing (CORS) Configuration
+    | Configuración de CORS (Cross-Origin Resource Sharing)
     |--------------------------------------------------------------------------
     |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    | Define las reglas para permitir que el cliente frontend (desarrollado en Vue 3)
+    | pueda realizar peticiones HTTP seguras hacia esta API de Laravel desde
+    | un origen o puerto diferente (por ejemplo: http://localhost:5173).
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],    // Rutas que permitirán el acceso CORS
+    // Rutas de Laravel que permitirán el acceso desde aplicaciones externas
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],    // Métodos HTTP permitidos
+    // Métodos HTTP permitidos para interactuar con los recursos de la API
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    // 'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')),    // Orígenes permitidos
+    /*
+    | MOTIVO DEL CAMBIO / AJUSTE:
+    | Se habilitó 'allowed_origins' => ['*'] para permitir que el servidor de
+    | desarrollo de Vite (usualmente en http://localhost:5173 o http://127.0.0.1:5173)
+    | pueda enviar peticiones HTTP (Login, Refresh, CRUD) sin ser bloqueado por la
+    | política de seguridad Same-Origin del navegador.
+    */
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => [],    // Patrones de orígenes permitidos
+    'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],    // Cabeceras permitidas
+    // Cabeceras HTTP permitidas en las solicitudes (necesario para Authorization con JWT)
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 
-    'exposed_headers' => [],    // Cabeceras expuestas
+    'exposed_headers' => [],
 
-    'max_age' => 84600,    // Tiempo máximo en segundos que se permite el cacheo de la solicitud
+    // Tiempo máximo en segundos que el navegador puede cachear la respuesta preflight OPTIONS
+    'max_age' => 84600,
 
-    'supports_credentials' => false,    // Permite el uso de credenciales (cookies, autenticación HTTP)
+    'supports_credentials' => false,
 
 ];
