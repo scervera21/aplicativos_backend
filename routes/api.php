@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\AplicativoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
+        
     });
 
     Route::middleware('auth:api')->group(function () {
@@ -38,24 +40,32 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [UserController::class, 'index']);
             Route::post('/', [UserController::class, 'store']);
             Route::get('/{id}', [UserController::class, 'show']);
-            Route::put('/{id}', [UserController::class, 'update']);
+            Route::patch('/{id}', [UserController::class, 'update']);
             Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
+
+        Route::prefix('aplicativos')->group(function () {
+            Route::get('/', [AplicativoController::class, 'index']);
+            Route::post('/', [AplicativoController::class, 'store']);
+            Route::get('/{id}', [AplicativoController::class, 'show']);
+            Route::patch('/{id}', [AplicativoController::class, 'update']);
+            Route::delete('/{id}', [AplicativoController::class, 'destroy']);
         });
 
         Route::prefix('roles')->group(function () {
             Route::get('/', [RoleController::class, 'index']);
             Route::post('/', [RoleController::class, 'store']);
             Route::get('/{id}', [RoleController::class, 'show']);
-            Route::post('/{id}/update', [RoleController::class, 'update']);
-            Route::post('/{id}/delete', [RoleController::class, 'destroy']);
+            Route::put('/{id}', [RoleController::class, 'update']);
+            Route::delete('/{id}', [RoleController::class, 'destroy']);
         });
 
         Route::prefix('permissions')->group(function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::post('/', [PermissionController::class, 'store']);
             Route::get('/{id}', [PermissionController::class, 'show']);
-            Route::post('/{id}/update', [PermissionController::class, 'update']);
-            Route::post('/{id}/delete', [PermissionController::class, 'destroy']);
+            Route::put('/{id}', [PermissionController::class, 'update']);
+            Route::delete('/{id}', [PermissionController::class, 'destroy']);
         });
 
     });

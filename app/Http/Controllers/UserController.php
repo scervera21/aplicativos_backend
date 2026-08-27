@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Validation\Rule;
+use App\Models\Role;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
-        /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
+
+       $this->authorize('viewAny', User::class);
+
             $users = User::all(); 
 
             return response()->json([
@@ -25,22 +29,26 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $validated = $request->validate([
-            'username' => ['required', 'string', 'max:20', Rule::unique('users', 'username')],
-            'first_name' => 'required|string|max:20',
-            'last_name' => 'required|string|max:20',
-            'email' => ['required', 'string', 'email', Rule::unique('users', 'email')],
-            'password' => 'required|string|min:6',
-        ]);
 
-        $user = User::create($validated);
+        $this->authorize('create', User::class);
 
-        return response()->json([
-            "message" => 'Datos guardados exitosamente',
-            "data" => $user
-        ], 201);
+            $user = User::create($request->validated());
+
+            if($request->has('role')) {
+                $role = Role::where('name', $request->role);
+                if($role) {
+                    $user->assignRole($role);
+                }
+            } else {
+                $user->assignRole('Usuario');
+            }
+            
+            return response()->json([
+                "message" => 'Usuario guardado exitosamente',
+                "data" => $user
+            ], 201);
     }
 
     /**
@@ -50,8 +58,14 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
+        if(!$user) {
+            return response()->json([
+                "message" => 'Usuario no encontrado',
+            ], 404);
+        }
+
         return response()->json([
-            "message" => 'Datos obtenidos exitosamente',
+            "message" => 'Usuario obtenido exitosamente',
             "data" => $user
         ], 200);
     }
@@ -59,30 +73,43 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        $user = User::find($id);
 
-        $user->update($request->all());
+        $this->authorize('update', $id);
 
-        return response()->json([
-            "message" => 'Datos actualizados exitosamente',
-            "data" => $user
-        ], 200);
+            $user = User::findOrFail($id);
+
+            $user->update($request->validated());
+        
+            if($request->has('role')) {
+                $role = Role::where('name', $request->role);
+                if($role) {
+                    $user->syncRoles($role);
+                }
+            }
+        
+            return response()->json([
+                "message" => 'Usuario actualizado exitosamente',
+                "data" => $user,
+                "rol" => $user->role->pluck('name'),
+            ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
+
     public function destroy($id)
     {
-        $user = User::find($id);
 
-        $user->delete();
+        $this->authorize('delete', $id);
+        
+            $user = User::findOrFail($id);
+            $user->delete();
 
-        return response()->json([
-            "message" => 'Datos eliminados exitosamente',
-            "data" => $user
-        ], 200);
+            return response()->json([
+                "message" => 'Usuario eliminado exitosamente',
+            ], 200);
     }
 }

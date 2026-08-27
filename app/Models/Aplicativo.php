@@ -24,6 +24,6 @@ class Aplicativo extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class); // Un aplicativo pertenece a un usuario
+        return $this->belongsTo(User::class); // Un aplicativo registrado por un usuario
     }
 }
