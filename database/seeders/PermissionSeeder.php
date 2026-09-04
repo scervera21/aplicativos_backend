@@ -18,7 +18,7 @@ class PermissionSeeder extends Seeder
             'aplicativos' => ['acceder', 'crear', 'editar', 'eliminar'],
             'usuarios' => ['acceder', 'crear', 'editar', 'eliminar', 'asignar_roles'],
             'roles' => ['acceder', 'crear', 'editar', 'eliminar', 'asignar_permisos'],
-            'permisos' => ['acceder', 'crear', 'editar', 'eliminar', 'asignar_roles'],
+            'permisos' => ['acceder', 'crear', 'editar', 'eliminar'],
         ];
 
         foreach ($modules as $module => $permissions) {

@@ -15,16 +15,16 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'scerve01@cantv.com.ve'],
             [
-                'username' => 'Admin',
-                'first_name' => 'admin',
-                'last_name' => 'admin',
-                'password' => Hash::make('123456'),
+                'username' => 'scerve01',
+                'first_name' => 'sara',
+                'last_name' => 'cervera',
+                'password' => Hash::make('30926047'),
                 'status' => true,
             ]
         );
-        $admin->assignRole(Role::findByName('Administrador', 'api'));
+        $admin->assignRole(Role::findByName('administrador', 'api'));
 
         // $supervisor = User::firstOrCreate(
         //     ['email' => 'supervisor@example.com'],
@@ -39,15 +39,15 @@ class UserSeeder extends Seeder
         // $supervisor->assignRole(Role::findByName('Supervisor', 'api'));
 
         $user = User::firstOrCreate(
-            ['email' => 'user@example.com'],
+            ['email' => 'snaumann01@cantv.com.ve'],
             [
-                'username' => 'Usuario',
-                'first_name' => 'usuario',
-                'last_name' => 'usuario',
+                'username' => 'snaumann01',
+                'first_name' => 'stephany',
+                'last_name' => 'naumann',
                 'password' => Hash::make('123456'),
                 'status' => true,
             ]
         );
-        $user->assignRole(Role::findByName('Usuario', 'api'));
+        $user->assignRole(Role::findByName('usuario', 'api'));
     }
 }

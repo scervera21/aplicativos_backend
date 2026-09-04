@@ -86,7 +86,7 @@ class AuthController extends Controller
                     $user->assignRole($role);
                 }
             } else {
-                $user->assignRole('Usuario');
+                $user->assignRole('usuario');
             }
             
             return response()->json([

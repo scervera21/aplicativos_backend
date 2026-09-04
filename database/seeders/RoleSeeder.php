@@ -14,7 +14,7 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $admin_role = Role::firstOrCreate([
-            'name' => 'Administrador',
+            'name' => 'administrador',
             'guard_name' => 'api',
         ]);
 
@@ -29,7 +29,7 @@ class RoleSeeder extends Seeder
         // $supervisor_role->syncPermissions($permissions_supervisor);
         
         $regular_user_role = Role::firstOrCreate([
-            'name' => 'Usuario',
+            'name' => 'usuario',
             'guard_name' => 'api',
         ]);
 
