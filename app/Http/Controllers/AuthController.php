@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use App\Http\Requests\UserRequest;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
@@ -29,7 +30,14 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'Usuario incorrecto',
-            ], 400);
+            ], 401);
+        }
+
+        // Validación: Contraseña incorrecta
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Contraseña incorrecta',
+            ], 401);
         }
 
         /*
@@ -46,13 +54,6 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Validación: Contraseña incorrecta
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Contraseña incorrecta',
-            ], 401);
-        }
-
         // Generación del token JWT para la sesión del usuario autenticado
         $token = auth('api')->login($user);
 
@@ -64,6 +65,109 @@ class AuthController extends Controller
             'expires_in' => auth('api')->factory()->getTTL() * 60, // Tiempo de expiración en segundos
             'user' => $user, // Objeto de usuario completo con roles y permisos incluidos
         ]);
+    }
+
+    /**
+     * Registra un nuevo usuario.
+     * 
+     * @param \App\Http\Requests\UserRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(UserRequest $request)
+    {
+
+        $this->authorize('create', User::class);
+
+            $user = User::create($request->validated());
+
+            if($request->has('role')) {
+                $role = Role::where('name', $request->role);
+                if($role) {
+                    $user->assignRole($role);
+                }
+            } else {
+                $user->assignRole('Usuario');
+            }
+            
+            return response()->json([
+                "message" => 'Usuario guardado exitosamente',
+                "data" => $user
+            ], 201);
+
+    }
+
+    /**
+     * Obtiene todos los usuarios registrados.
+     */
+    public function index()
+    {
+
+        $this->authorize('viewAny', User::class);
+
+            $users = User::all(); 
+
+            return response()->json([
+                "message" => 'Datos obtenidos exitosamente',
+                "data" => $users
+            ], 200);
+    }
+
+    /**
+     * Muestra el usuario registrado
+     */
+
+    public function show(User $user)
+    {
+        User::findOrFail($user);
+
+        if(!$user) {
+            return response()->json([
+                "message" => 'Usuario no encontrado',
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => 'Usuario obtenido exitosamente',
+            "data" => $user
+        ], 200);
+    }
+
+    /**
+     * Actualiza el usuario con el id proporcionado.
+     */
+    public function update(UserRequest $request, User $user)
+    {
+
+        $this->authorize('update', $user);
+
+            $user->update($request->validated());
+        
+            if($request->has('role')) {
+                $role = Role::where('name', $request->role);
+                if($role) {
+                    $user->syncRoles($role);
+                }
+            }
+        
+            return response()->json([
+                "message" => 'Usuario actualizado exitosamente',
+                "data" => $user,
+                "rol" => $user->role->pluck('name'),
+            ], 200);
+    }
+
+    /**
+     * Elimina el usuario con el id proporcionado.
+     */
+    public function destroy(User $user)
+    {
+
+        $this->authorize('delete', $user);
+        $user->delete();
+
+        return response()->json([
+            "message" => 'Usuario eliminado exitosamente',
+        ], 200);
     }
 
     /**
@@ -104,8 +208,8 @@ class AuthController extends Controller
         if ($user && !$user->status) {
             auth('api')->logout();
             return response()->json([
-                'message' => 'El usuario se encuentra inactivo. La sesión ha sido finalizada.',
-            ], 403);
+                'message' => 'La sesión ha sido finalizada.',
+            ], 401);
         }
 
         return response()->json([

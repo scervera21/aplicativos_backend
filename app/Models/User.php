@@ -114,6 +114,7 @@ class User extends Authenticatable implements JWTSubject
         $this->update(['status' => true]);
     }
 
+    // Relación con la tabla aplicativos
     public function aplicativos() : HasMany // Indica que la función devuelve una relación HasMany
     {
         return $this->hasMany(Aplicativo::class); // El usuario autenticado puede tener muchas relaciones con la tabla aplicativos

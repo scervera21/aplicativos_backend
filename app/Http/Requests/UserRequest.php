@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
 {
@@ -20,7 +21,7 @@ class UserRequest extends FormRequest
             'first_name' => 'required|string|max:20',
             'last_name' => 'required|string|max:20',
             'email' => ['required', 'string', 'email', Rule::unique('users', 'email')],
-            'password' => 'required|string|min:6',
+            'password' => ['required', Password::defaults()],
         ];
     }
 
@@ -39,6 +40,10 @@ class UserRequest extends FormRequest
             'email.unique' => 'El correo electronico ya existe',
             'password.required' => 'La contraseña es obligatoria',
             'password.min' => 'La contraseña debe tener como minimo 6 caracteres',
+            'password.letters' => 'La contraseña debe tener al menos una letra',
+            'password.numbers' => 'La contraseña debe tener al menos un numero',
+            'password.symbols' => 'La contraseña debe tener al menos un simbolo',
+            'password.uncompromised' => 'La contraseña es debil o ha sido comprometida',
         ];
     }
 }
