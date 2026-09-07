@@ -46,7 +46,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [           // Las columnas que no se pueden mostrar al usuario
         'password',
-        'remember_token',
+        'failed_login_attempts',
+        'locked_until',
         'created_at',
         'updated_at',
     ];
@@ -102,7 +103,7 @@ class User extends Authenticatable implements JWTSubject
         $this->failed_login_attempts++;
         if ($this->failed_login_attempts >= 3) {
             $this->update(['locked_until' => now()->addMinutes(5)]);
-            $this->update(['status' => false]);
+            $this->update(['status' => false]); 
         }
     }
 

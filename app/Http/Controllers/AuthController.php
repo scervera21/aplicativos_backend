@@ -26,45 +26,30 @@ class AuthController extends Controller
         // Búsqueda del usuario cargando sus roles y permisos para el control de acceso en el frontend
         $user = User::with('roles.permissions')->where('username', $request->username)->first();
 
-        // Validación: Usuario inexistente
         if (!$user) {
             return response()->json([
                 'message' => 'Usuario incorrecto',
             ], 401);
-        }
-
-        // Validación: Contraseña incorrecta
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Contraseña incorrecta',
-            ], 401);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validación de Estado Activo (status)
-        |--------------------------------------------------------------------------
-        | Si el status del usuario es false (0 en la base de datos), significa que
-        | su cuenta está inactiva o deshabilitada, por lo que se rechaza el login
-        | con un código HTTP 403 Forbidden antes de generar el token JWT.
-        */
-        if (!$user->status) {
+        } elseif (!$user->status) {
             return response()->json([
                 'message' => 'El usuario se encuentra inactivo. Comuníquese con el administrador.',
             ], 403);
+        } elseif (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Contraseña incorrecta',
+            ], 401);
+        } else {
+            // Generación del token JWT para la sesión del usuario autenticado
+            $token = auth('api')->login($user);
+
+            // Respuesta completa esperada por el frontend (auth.ts -> loginSuccess)
+            return response()->json([
+                'message' => 'Login exitoso',
+                'token' => $token,
+                'expires_in' => auth('api')->factory()->getTTL() * 60, // Tiempo de expiración en segundos
+                'user' => $user, // Objeto de usuario completo con roles y permisos incluidos
+            ]);            
         }
-
-        // Generación del token JWT para la sesión del usuario autenticado
-        $token = auth('api')->login($user);
-
-        // Respuesta completa esperada por el frontend (auth.ts -> loginSuccess)
-        return response()->json([
-            'message' => 'Login exitoso',
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60, // Tiempo de expiración en segundos
-            'user' => $user, // Objeto de usuario completo con roles y permisos incluidos
-        ]);
     }
 
     /**
