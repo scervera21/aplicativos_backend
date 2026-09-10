@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::controller(AuthController::class)->prefix('users')
+        Route::controller(UserController::class)->prefix('users')
         ->missing(function () {
             return response()->json(['message' => 'No encontrado'], 404);
         })
