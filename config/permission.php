@@ -9,23 +9,32 @@ return [
     'models' => [
 
         /*
-         * When using the "HasPermissions" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your permissions. Of course, it
-         * is often just the "Permission" model but you may use whatever you like.
-         *
-         * The model you want to use as a Permission model needs to implement the
-         * `Spatie\Permission\Contracts\Permission` contract.
-         */
+        |--------------------------------------------------------------------------
+        | Modelo de Permisos
+        |--------------------------------------------------------------------------
+        |
+        | Al usar el rasgo "HasPermissions" de este paquete, necesitamos saber qué
+        | modelo Eloquent se debe usar para recuperar los permisos. Por supuesto, 
+        | a menudo es solo el modelo "Permission", pero puedes usar el que quieras.
+        | 
+        | El modelo que deseas usar como modelo de permiso debe implementar el
+        | contrato `Spatie\Permission\Contracts\Permission`.
+        | 
+        */
 
         'permission' => Permission::class,
 
         /*
-         * When using the "HasRoles" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your roles. Of course, it
-         * is often just the "Role" model but you may use whatever you like.
-         *
-         * The model you want to use as a Role model needs to implement the
-         * `Spatie\Permission\Contracts\Role` contract.
+        |--------------------------------------------------------------------------
+        | Modelo de Roles
+        |--------------------------------------------------------------------------
+        |
+        | Al usar el rasgo "HasRoles" de este paquete, necesitamos saber qué
+        | modelo Eloquent se debe usar para recuperar los roles. Por supuesto, 
+        | a menudo es solo el modelo "Role", pero puedes usar el que quieras.
+        | 
+        | El modelo que deseas usar como modelo de rol debe implementar el
+        | contrato `Spatie\Permission\Contracts\Role`.
          */
 
         'role' => Role::class,

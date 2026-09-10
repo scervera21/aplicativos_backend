@@ -186,8 +186,19 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
-    'jwt_secret' => env('JWT_SECRET'),              // JWT Secret Key
-    'jwt_access_ttl' => env('JWT_ACCESS_TTL', 15),       // tiempo de duración del token de autenticación
-    'jwt_refresh_ttl' => env('JWT_REFRESH_TTL', 10080),      // tiempo de duración del token de refresco
+
+    /*
+    |--------------------------------------------------------------------------
+    | JWT Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Tiempo de duración del token de autenticación
+    | Tiempo de duración del token de refresco
+    | 
+    */
+
+    'jwt_secret' => env('JWT_SECRET'),
+    'jwt_access_ttl' => env('JWT_ACCESS_TTL', 15),
+    'jwt_refresh_ttl' => env('JWT_REFRESH_TTL', 10080),
 
 ];

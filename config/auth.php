@@ -7,32 +7,28 @@ return [
     | Authentication Defaults
     |--------------------------------------------------------------------------
     |
-    | This option controls the default authentication "guard" and password
-    | reset options for your application. You may change these defaults
-    | as required, but they're a perfect start for most applications.
+    | Definimos el 'guard' por defecto y el proveedor de contraseñas por defecto
+    | para la aplicación. Los principales campos son:
+    |   - guard: el 'guard' por defecto que se utilizará para autenticar a los usuarios
+    |   - passwords: el proveedor de contraseñas por defecto que se utilizará para autenticar a los usuarios
     |
     */
 
     'defaults' => [
-        'guard' => 'api',
-        'passwords' => 'users',
+        'guard' => 'api',                // Define el guard por defecto (API)
+        'passwords' => 'users',          // Define el proveedor de contraseñas por defecto (users)
     ],
 
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
-    |
-    | Next, you may define every authentication guard for your application.
-    | Of course, a great default configuration has been defined for you
-    | here which uses session storage and the Eloquent user provider.
-    |
-    | All authentication drivers have a user provider. This defines how the
-    | users are actually retrieved out of your database or other storage
-    | mechanisms used by this application to persist your user's data.
-    |
-    | Supported: "session"
-    |
+    | 
+    | Definimos los 'guards' (protectores) que se utilizarán para autenticar a los usuarios.
+    | En este caso, tenemos dos guards:
+    |   - web: para la autenticación por sesión
+    |   - api: para la autenticación por token JWT
+    | 
     */
 
     'guards' => [
@@ -41,8 +37,8 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'jwt',
-            'provider' => 'users',
+            'driver' => 'jwt',  // Utiliza el driver JWT para la autenticación de API
+            'provider' => 'users', // Utiliza el proveedor de usuarios "users"
         ],
     ],
 
@@ -50,17 +46,10 @@ return [
     |--------------------------------------------------------------------------
     | User Providers
     |--------------------------------------------------------------------------
-    |
-    | All authentication drivers have a user provider. This defines how the
-    | users are actually retrieved out of your database or other storage
-    | mechanisms used by this application to persist your user's data.
-    |
-    | If you have multiple user tables or models you may configure multiple
-    | sources which represent each model / table. These sources may then
-    | be assigned to any extra authentication guards you have defined.
-    |
-    | Supported: "database", "eloquent"
-    |
+    | 
+    | Definimos los proveedores de usuarios que se utilizarán para autenticar a los usuarios.
+    | En este caso, tenemos un proveedor "users" que utiliza el modelo "User".
+    | 
     */
 
     'providers' => [
@@ -80,18 +69,14 @@ return [
     | Resetting Passwords
     |--------------------------------------------------------------------------
     |
-    | You may specify multiple password reset configurations if you have more
-    | than one user table or model in the application and you want to have
-    | separate password reset settings based on the specific user types.
-    |
-    | The expiry time is the number of minutes that each reset token will be
-    | considered valid. This security feature keeps tokens short-lived so
-    | they have less time to be guessed. You may change this as needed.
-    |
-    | The throttle setting is the number of seconds a user must wait before
-    | generating more password reset tokens. This prevents the user from
-    | quickly generating a very large amount of password reset tokens.
-    |
+    | Aquí definimos la configuración para el restablecimiento de contraseñas.
+    | En este caso, tenemos una configuración "users" que utiliza el proveedor "users".
+    | Los principales campos son:
+    |   - provider: el proveedor de usuarios que se utilizará para autenticar a los usuarios
+    |   - table: la tabla de la base de datos que se utilizará para restablecer las contraseñas
+    |   - expire: el tiempo de expiración del token de restablecimiento de contraseña
+    |   - throttle: el tiempo de espera entre intentos de restablecimiento de contraseña
+    | 
     */
 
     'passwords' => [
@@ -108,12 +93,15 @@ return [
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | Here you may define the amount of seconds before a password confirmation
-    | times out and the user is prompted to re-enter their password via the
-    | confirmation screen. By default, the timeout lasts for three hours.
+    | El tiempo de expiración del token de restablecimiento de contraseña
+    | es el tiempo que el token de restablecimiento de contraseña será válido.
+    | Si el token expira, el usuario no podrá restablecer su contraseña.
+    | El tiempo de espera entre intentos de restablecimiento de contraseña
+    | es el tiempo que el usuario debe esperar antes de intentar restablecer
+    | su contraseña nuevamente.
     |
     */
 
-    'password_timeout' => 10800,
+    'password_timeout' => 10800,    // 3 horas en segundos
 
 ];

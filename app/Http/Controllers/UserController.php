@@ -43,6 +43,7 @@ class UserController extends Controller
         }
         
         return response()->json([
+            "success" => true,
             "message" => 'Usuario guardado exitosamente',
             "data" => $user
         ], 201);
@@ -51,11 +52,12 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-        $this->authorize('view', User::class);
 
-        $user = User::findOrFail($id);
+    public function show(User $user)
+    {
+        $this->authorize('view', $user);
+
+        User::findOrFail($user);
 
         if(!$user) {
             return response()->json([
@@ -66,17 +68,17 @@ class UserController extends Controller
         return response()->json([
             "message" => 'Usuario obtenido exitosamente',
             "data" => $user
-        ], 200);
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, $id)
+    public function update(UserRequest $request, User $user)
     {
-        $this->authorize('update', User::class);
+        $this->authorize('update', $user);
 
-        $user = User::findOrFail($id);
+        User::findOrFail($user);
 
         if(!$user) {
             return response()->json([
@@ -94,10 +96,11 @@ class UserController extends Controller
         }
         
         return response()->json([
+            "success" => true,
             "message" => 'Usuario actualizado exitosamente',
             "data" => $user,
             "rol" => $user->role->pluck('name'),
-        ], 200);
+        ]);
     }
 
     /**
@@ -106,9 +109,9 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('delete', User::class);
+        $this->authorize('delete', $user);
 
-        $user = User::findOrFail($user);
+        User::findOrFail($user);
 
         if(!$user) {
             return response()->json([
@@ -119,7 +122,8 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json([
+            "success" => true,
             "message" => 'Usuario eliminado exitosamente',
-        ], 200);
+        ]);
     }
 }
