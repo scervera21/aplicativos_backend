@@ -29,7 +29,7 @@ Route::prefix('v1')->group(function () {
     */
     Route::prefix('auth')->group(function () {
         // Inicio de sesión: recibe username y password, devuelve JWT + datos del usuario
-        Route::post('login', [AuthController::class, 'login']);
+        Route::post('/login', [AuthController::class, 'login']);
     });
 
     /*
@@ -48,13 +48,13 @@ Route::prefix('v1')->group(function () {
         */
         Route::prefix('auth')->group(function () {
             // GET /api/v1/auth/me: Obtiene datos actualizados del usuario en sesión
-            Route::get('me', [AuthController::class, 'me']);
+            Route::get('/me', [AuthController::class, 'me']);
 
             // POST /api/v1/auth/logout: Cierre de sesión (invalida el token en el servidor)
-            Route::post('logout', [AuthController::class, 'logout']);
+            Route::post('/logout', [AuthController::class, 'logout']);
 
             // POST /api/v1/auth/refresh: Utilizado por el interceptor de Axios para refresco silencioso
-            Route::post('refresh', [AuthController::class, 'refresh']);
+            Route::post('/refresh', [AuthController::class, 'refresh']);
         });
         
         /*

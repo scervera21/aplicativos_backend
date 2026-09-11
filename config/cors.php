@@ -17,7 +17,7 @@ return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     // Métodos HTTP permitidos para interactuar con los recursos de la API
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    'allowed_methods' => ['*'],
 
     /*
     | MOTIVO DEL CAMBIO / AJUSTE:
@@ -31,7 +31,7 @@ return [
     'allowed_origins_patterns' => [],
 
     // Cabeceras HTTP permitidas en las solicitudes (necesario para Authorization con JWT)
-    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
