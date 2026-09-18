@@ -73,6 +73,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/{user}', 'show');
             Route::patch('/editar/{user}', 'update');
             Route::delete('/{user}', 'destroy');
+            Route::get('/buscar/{user}', 'search');
         });
 
         /*
@@ -89,7 +90,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
             Route::get('/{id}', 'show');
-            Route::patch('/actualizar/{id}', 'update');
+            Route::patch('/editar/{id}', 'update');
             Route::delete('/{id}', 'destroy');
         });
 
@@ -107,7 +108,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
             Route::get('/{id}', 'show');
-            Route::put('/actualizar/{id}', 'update');
+            Route::patch('/editar/{id}', 'update');
             Route::delete('/{id}', 'destroy');
         });
 

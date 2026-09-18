@@ -16,7 +16,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::all(); 
+        $users = User::all();
 
         return response()->json([
             "message" => 'Datos obtenidos exitosamente',
@@ -69,6 +69,21 @@ class UserController extends Controller
             "message" => 'Usuario obtenido exitosamente',
             "data" => $user
         ]);
+    }
+
+    public function search($user) {
+
+        $username = User::where('username', $user)->get();
+
+        if (!$username) {
+            return response()->json([
+                "message" => 'Usuario no encontrado',
+            ], 404);
+        }
+        return response()->json([
+            "message" => 'Usuario obtenido exitosamente',
+            "data" => $username
+        ], 200);
     }
 
     /**
