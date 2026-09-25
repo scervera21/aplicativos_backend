@@ -96,39 +96,9 @@ Route::prefix('v1')->group(function () {
 
         /*
         |----------------------------------------------------------------------
-        | Módulo: Roles y Permisos Spatie (/api/v1/roles)
+        | Módulo: Roles y Permisos Spatie
         |----------------------------------------------------------------------
         */
-
-        Route::controller(RoleController::class)->prefix('roles')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
-        });
-
-        /*
-        |----------------------------------------------------------------------
-        | Módulo: Permisos Individuales (/api/v1/permissions)
-        |----------------------------------------------------------------------
-        */
-
-        Route::controller(PermissionController::class)->prefix('permissions')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::put('/actualizar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
-        });
 
     });
 

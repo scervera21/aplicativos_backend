@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Events\QueryExecuted; //para mostrar las consultas en consola
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +33,16 @@ class AppServiceProvider extends ServiceProvider
 
             return $passwordRule;
         });
+
+        //Para mostrar las consultas en consola
+        /*
+
+        DB::listen(function (QueryExecuted $query) {
+            'query' => $query->sql, //query sql
+            'bindings' => $query->bindings, //parametros de la consulta
+            'time' => $query->time, //tiempo de ejecucion
+        });
+
+        */
     }
 }

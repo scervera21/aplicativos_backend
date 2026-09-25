@@ -37,7 +37,7 @@ class AuthController extends Controller
                 'message' => 'Contraseña incorrecta',
             ], 401);
         } else {
-            // Generación del token JWT para la sesión del usuario autenticado
+            // Generación del token JWT para la sesión del usuario autenticado con guard 'api'
             $token = auth('api')->login($user);
 
             // Respuesta completa esperada por el frontend (auth.ts -> loginSuccess)
