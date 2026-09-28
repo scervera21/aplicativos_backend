@@ -13,16 +13,18 @@ return new class extends Migration
     {
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_aplicativo');
-            $table->string('abreviacion');
-            $table->string('descripcion');
+            $table->string('nombre_aplicativo',30);
+            $table->string('abreviacion',6);
+            $table->string('descripcion',100)->nullable();
             $table->foreignId('responsable_id')->constrained('security.users')->onDelete('cascade');
             $table->boolean('pap');
-            $table->string('estatus');
-            $table->integer('avance');
-            $table->foreignId('gerencia_general_id')->constrained('public.gerencia_general')->onDelete('cascade');
-            $table->unsignedBigInteger('gerencia_linea_id');
-            $table->foreign('gerencia_linea_id')->references('id')->on('public.gerencia_linea')->onDelete('cascade');
+            $table->string('estatus',20);
+
+            $table->integer('avance');  // % de avance (campo calculado)
+            $table->integer('pendiente');   // % de pendiente (campo calculado)
+
+            $table->foreignId('gerencia_linea_id')->constrained('public.gerencia_linea')->onDelete('cascade');
+            $table->foreignId('detalles_id')->constrained('public.detalles_aplicativos')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -32,6 +34,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropForeign(['detalles_id']);
+        Schema::dropColumn('detalles_id');
+        Schema::dropForeign(['gerencia_linea_id']);
+        Schema::dropColumn('gerencia_linea_id');
+        Schema::dropForeign(['responsable_id']);
+        Schema::dropColumn('responsable_id');
         Schema::dropIfExists('public.aplicativos');
     }
 };
