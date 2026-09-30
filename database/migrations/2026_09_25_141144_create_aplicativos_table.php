@@ -16,15 +16,10 @@ return new class extends Migration
             $table->string('nombre_aplicativo',30);
             $table->string('abreviacion',6);
             $table->string('descripcion',100)->nullable();
-            $table->foreignId('responsable_id')->constrained('security.users')->onDelete('cascade');
+            $table->foreignId('responsable')->constrained('security.users')->onDelete('cascade');
             $table->boolean('pap');
             $table->string('estatus',20);
-
-            $table->integer('avance');  // % de avance (campo calculado)
-            $table->integer('pendiente');   // % de pendiente (campo calculado)
-
-            $table->foreignId('gerencia_linea_id')->constrained('public.gerencia_linea')->onDelete('cascade');
-            $table->foreignId('detalles_id')->constrained('public.detalles_aplicativos')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('gerencia_linea')->constrained('public.gerencias')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -34,12 +29,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropForeign(['detalles_id']);
-        Schema::dropColumn('detalles_id');
-        Schema::dropForeign(['gerencia_linea_id']);
-        Schema::dropColumn('gerencia_linea_id');
-        Schema::dropForeign(['responsable_id']);
-        Schema::dropColumn('responsable_id');
+        Schema::dropForeign(['gerencia_linea']);
+        Schema::dropColumn('gerencia_linea');
+        Schema::dropForeign(['responsable']);
+        Schema::dropColumn('responsable');
         Schema::dropIfExists('public.aplicativos');
     }
 };

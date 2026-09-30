@@ -115,6 +115,12 @@ class User extends Authenticatable implements JWTSubject
         $this->update(['status' => true]);
     }
 
+    // Relación con la tabla gerencias
+    public function gerencia()
+    {
+        return $this->belongsTo(Gerencia::class);
+    }
+
     // Relación con la tabla aplicativos
     public function aplicativos() : HasMany // Indica que la función devuelve una relación HasMany
     {

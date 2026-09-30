@@ -13,19 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('security.users', function (Blueprint $table) {
-            $table->id();
-            $table->string('username',20)->unique()->index();
-            $table->string('email')->unique();
-            $table->string('first_name', 20);
-            $table->string('last_name', 20);
-            $table->string('password');
-            $table->boolean('status')->default(true);   // Indica si el usuario está activo o inactivo
-            $table->unsignedSmallInteger('failed_login_attempts')->default(0); // Contador de intentos fallidos
-            $table->timestamp('locked_until')->nullable(); // Bloquea la cuenta del usuario hasta que el usuario ingrese el token de recuperación
-            // $table->rememberToken();
-            $table->timestamps();
-        });
+        // Schema::table('security.users', function (Blueprint $table) {
+        //     $table->foreignId('gerencia_id')->constrained('public.gerencias')->onDelete('cascade');
+        // });
     }
 
     /**
@@ -33,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropForeign(['gerencia_id']);
+        Schema::dropColumn('gerencia_id');
         Schema::dropIfExists('security.users');
     }
 };
