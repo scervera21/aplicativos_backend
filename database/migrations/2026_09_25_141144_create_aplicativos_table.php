@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_aplicativo',30);
-            $table->string('abreviacion',6);
+            $table->string('abreviacion',6)->nullable();
             $table->string('descripcion',100)->nullable();
-            $table->foreignId('responsable')->constrained('security.users')->onDelete('cascade');
+            $table->foreignId('responsable')->nullable()->constrained('security.users')->onDelete('cascade');
             $table->boolean('pap');
             $table->string('estatus',20);
             $table->foreignId('gerencia_linea')->constrained('public.gerencias')->onDelete('cascade');

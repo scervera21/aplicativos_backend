@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nombre_gerencia',30);
             $table->string('abreviacion',5)->nullable();
-            $table->string('ubicacion',10);
             $table->timestamps();
         });
     }

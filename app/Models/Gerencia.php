@@ -14,7 +14,6 @@ class Gerencia extends Model
     protected $fillable = [
         'nombre_gerencia',
         'abreviacion',
-        'ubicacion'
     ];
 
     public function usuarios()

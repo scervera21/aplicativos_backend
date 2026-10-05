@@ -18,7 +18,7 @@ class Actividad extends Model
         'area',
         'prioridad',
         'colaboradores',
-        'porcentaje_avance',
+        'completado',
         'comentarios',
         'aplicativo_id',
     ];
@@ -30,16 +30,6 @@ class Actividad extends Model
     public function aplicativos()
     {
         return $this->belongsTo(Aplicativo::class); // Una actividad pertenece a un aplicativo
-    }
-
-    public function usuarios()
-    {
-        return $this->belongsTo(User::class); // Una actividad pertenece a un usuario
-    }
-
-    public function gerencia()
-    {
-        return $this->belongsTo(Gerencia::class); // Una actividad pertenece a una gerencia
     }
 
 }
