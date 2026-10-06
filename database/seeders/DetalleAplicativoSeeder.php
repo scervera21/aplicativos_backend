@@ -14,6 +14,11 @@ class DetalleAplicativoSeeder extends Seeder
      */
     public function run(): void
     {
+        if(!Aplicativo::exists()) {
+            $this->command->error('No existen aplicativos registrados, por favor ejecuta AplicativoSeeder primero.');
+            return;
+        } 
+
         $sysaplicativos = Aplicativo::where('nombre_aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first();
         $geolocalizacion = Aplicativo::where('nombre_aplicativo', 'Sistema Integral Geolocalización e Incidencias GGSI')->first();
 
@@ -29,7 +34,7 @@ class DetalleAplicativoSeeder extends Seeder
                 'fecha_fin'=> null,
                 'lenguajes_frontend' => 'Vue 3',
                 'lenguajes_backend' => 'Laravel 10',
-                'base_datos' => 'PostgreSQL 16',
+                'bases_de_datos' => 'PostgreSQL 16',
                 'observaciones' => 'En desarrollo',
             ],
             [
@@ -38,7 +43,7 @@ class DetalleAplicativoSeeder extends Seeder
                 'fecha_fin'=> null,
                 'lenguajes_frontend' => 'Vue 3',
                 'lenguajes_backend' => 'Laravel 9',
-                'base_datos' => 'PostgreSQL 14',
+                'bases_de_datos' => 'PostgreSQL 14',
                 'observaciones' => 'En proceso de adecuación y pruebas QA',
             ],            
         ];

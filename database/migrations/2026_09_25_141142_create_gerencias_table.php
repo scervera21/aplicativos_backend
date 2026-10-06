@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('public.gerencias', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_gerencia',30);
-            $table->string('abreviacion',5)->nullable();
+            $table->string('gerencia',80);
+            $table->string('sigla',5)->nullable();
             $table->timestamps();
         });
     }

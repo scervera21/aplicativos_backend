@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_aplicativo',30);
-            $table->string('abreviacion',6)->nullable();
-            $table->string('descripcion',100)->nullable();
-            $table->foreignId('responsable')->nullable()->constrained('security.users')->onDelete('cascade');
+            $table->string('aplicativo',80);
+            $table->string('alias',6)->nullable();
+            $table->foreignId('responsable')->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
             $table->boolean('pap');
-            $table->string('estatus',20);
-            $table->foreignId('gerencia_linea')->constrained('public.gerencias')->onDelete('cascade');
+            $table->string('estatus',20)->default('Sin Estatus');
+            $table->string('descripcion',100)->nullable();
             $table->timestamps();
         });
     }
@@ -29,8 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropForeign(['gerencia_linea']);
-        Schema::dropColumn('gerencia_linea');
         Schema::dropForeign(['responsable']);
         Schema::dropColumn('responsable');
         Schema::dropIfExists('public.aplicativos');

@@ -18,14 +18,14 @@ class AplicativoSeeder extends Seeder
         // Consultamos la existencia de gerencias y usuarios antes de crear los aplicativos
         
         if(!Gerencia::exists()) {
-            $this->command->warn('Gerencia no encontrada, revisa que GerenciaSeeder se haya ejecutado correctamente.');
+            $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
             $gsos = Gerencia::where('abreviacion', 'GSOS')->first();
         }
 
         if(!User::exists()) {
-            $this->command->warn('Usuario no encontrado, revisa que UserSeeder se haya ejecutado correctamente.');
+            $this->command->error('No existen usuarios registrados, por favor ejecuta UserSeeder primero.');
             return;
         } else {
             $usuarios = User::all();

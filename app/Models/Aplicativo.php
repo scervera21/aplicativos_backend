@@ -17,7 +17,7 @@ class Aplicativo extends Model
         'responsable',
         'pap',
         'estatus',
-        'gerencia_linea',
+        'gerencia_id',
     ];
 
     public function detallesAplicativos()

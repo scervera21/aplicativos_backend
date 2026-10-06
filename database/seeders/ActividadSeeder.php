@@ -15,6 +15,11 @@ class ActividadSeeder extends Seeder
     public function run(): void
     {
 
+        if(!Aplicativo::exists()) {
+            $this->command->error('No existen aplicativos registrados, por favor ejecuta AplicativoSeeder primero.');
+            return;
+        }
+
         $sysaplicativos = Aplicativo::where('nombre_aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first();
         $geolocalizacion = Aplicativo::where('nombre_aplicativo', 'Sistema Integral Geolocalización e Incidencias GGSI')->first();
 

@@ -37,6 +37,7 @@ class User extends Authenticatable implements JWTSubject
         'locked_until',
         'created_at',
         'updated_at',
+        'gerencia_id',
     ];
 
     /**
@@ -119,11 +120,5 @@ class User extends Authenticatable implements JWTSubject
     public function gerencia()
     {
         return $this->belongsTo(Gerencia::class);
-    }
-
-    // Relación con la tabla aplicativos
-    public function aplicativos() : HasMany // Indica que la función devuelve una relación HasMany
-    {
-        return $this->hasMany(Aplicativo::class); // El usuario autenticado puede tener muchas relaciones con la tabla aplicativos
     }
 }

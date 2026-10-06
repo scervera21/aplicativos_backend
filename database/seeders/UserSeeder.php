@@ -15,36 +15,27 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $admin = User::firstOrCreate(
-            ['email' => 'scerve01@cantv.com.ve'],
+            ['username' => 'admin'],
+
             [
-                'username' => 'scerve01',
-                'first_name' => 'sara',
-                'last_name' => 'cervera',
-                'password' => Hash::make('30926047'),
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'email' => 'admin@cantv.com',
+                'telefono' => '04141234567',
+                'password' => Hash::make('admin123'),
                 'status' => true,
             ]
         );
+
         $admin->assignRole(Role::findByName('administrador', 'api'));
 
-        // $supervisor = User::firstOrCreate(
-        //     ['email' => 'supervisor@example.com'],
-        //     [
-        //         'username' => 'Supervisor',
-        //         'first_name' => 'supervisor',
-        //         'last_name' => 'supervisor',
-        //         'password' => Hash::make('123456'),
-        //         'status' => true,
-        //     ]
-        // );
-        // $supervisor->assignRole(Role::findByName('Supervisor', 'api'));
-
         $user = User::firstOrCreate(
-            ['email' => 'snaumann01@cantv.com.ve'],
+            ['email' => 'invitado@cantv.com.ve'],
             [
-                'username' => 'snaumann01',
-                'first_name' => 'stephany',
-                'last_name' => 'naumann',
-                'password' => Hash::make('123456'),
+                'username' => 'invitado',
+                'first_name' => 'invitado',
+                'last_name' => 'invitado',
+                'password' => Hash::make('invitado'),
                 'status' => true,
             ]
         );
