@@ -14,11 +14,11 @@ class PermissionSeeder extends Seeder
     {
         // Listado de módulos y sus permisos
         $modules = [
-            'dashboard' => ['acceder'],
-            'aplicativos' => ['acceder', 'crear', 'editar', 'eliminar'],
-            'usuarios' => ['acceder', 'crear', 'editar', 'eliminar', 'asignar_roles'],
-            'roles' => ['acceder', 'crear', 'editar', 'eliminar', 'asignar_permisos'],
-            'permisos' => ['acceder', 'crear', 'editar', 'eliminar'],
+            'dashboard' => ['ver'],
+            'aplicativos' => ['ver', 'crear', 'editar', 'eliminar', 'ver_detalles'],
+            'usuarios' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_roles'],
+            'roles' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_permisos'],
+            'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
         ];
 
         foreach ($modules as $module => $permissions) {
@@ -26,7 +26,7 @@ class PermissionSeeder extends Seeder
                 Permission::firstOrCreate([
                     'name' => $permission . '_' . $module,
                     'guard_name' => 'api',
-                    'category' => $permission == 'acceder' ? 'access' : 'action',
+                    'category' => $permission == 'ver' ? 'access' : 'action',
                     'module' => $module
                 ]);
             }

@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('aplicativo',80);
             $table->string('alias',6)->nullable();
-            $table->foreignId('responsable')->nullable()->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
             $table->boolean('pap');
             $table->string('estatus',20)->default('Sin Estatus');
             $table->string('descripcion',100)->nullable();
+            $table->foreignId('responsable')->nullable()->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('gerencia_id')->nullable()->constrained('public.gerencias')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -29,7 +30,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropForeign(['responsable']);
+        Schema::dropForeign(['gerencia_id']);
         Schema::dropColumn('responsable');
+        Schema::dropColumn('gerencia_id');
         Schema::dropIfExists('public.aplicativos');
     }
 };

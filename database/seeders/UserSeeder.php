@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Gerencia;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -14,31 +15,49 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
+        if(!Gerencia::exists()) {
+            $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
+            return;
+        } else {
+            $gerencia = Gerencia::firstOrFail()->id;
+        }
+
+        if(!Role::exists()) {
+            $this->command->error('No existen roles registrados, por favor ejecuta RoleSeeder primero.');
+            return;
+        } else {
+            $admin_role = Role::where('name', 'administrador')->get();
+            $user_role = Role::where('name', 'usuario')->get();
+        }
+
         $admin = User::firstOrCreate(
             ['username' => 'admin'],
 
             [
-                'name' => 'Admin User',
                 'username' => 'admin',
+                'first_name' => 'admin',
+                'last_name' => 'admin',
                 'email' => 'admin@cantv.com',
-                'telefono' => '04141234567',
                 'password' => Hash::make('admin123'),
-                'status' => true,
+                'gerencia_id' => $gerencia,
             ]
         );
 
-        $admin->assignRole(Role::findByName('administrador', 'api'));
+        $admin->assignRole($admin_role);
 
         $user = User::firstOrCreate(
-            ['email' => 'invitado@cantv.com.ve'],
+            ['username' => 'test_user'],
+
             [
-                'username' => 'invitado',
-                'first_name' => 'invitado',
-                'last_name' => 'invitado',
-                'password' => Hash::make('invitado'),
-                'status' => true,
+                'username' => 'test_user',
+                'first_name' => 'test_user',
+                'last_name' => 'test_user',
+                'email' => 'test_user@cantv.com',
+                'password' => Hash::make('testuser'),
+                'gerencia_id' => $gerencia,
             ]
         );
-        $user->assignRole(Role::findByName('usuario', 'api'));
+        $user->assignRole($user_role);
     }
 }

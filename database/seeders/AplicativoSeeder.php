@@ -21,34 +21,32 @@ class AplicativoSeeder extends Seeder
             $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
-            $gsos = Gerencia::where('abreviacion', 'GSOS')->first();
+            $gsos = Gerencia::firstOrFail()->id;
         }
 
         if(!User::exists()) {
             $this->command->error('No existen usuarios registrados, por favor ejecuta UserSeeder primero.');
             return;
         } else {
-            $usuarios = User::all();
+            $users = User::all();
         }
 
         $aplicativos = [
             [
-                'nombre_aplicativo'=> 'Sistema de Seguimiento de Aplicativos GGSI',
-                'abreviacion'=> null,
-                'descripcion'=> 'Monitoreo de avances de los proyectos de la GGSI',
-                'responsable'=> $usuarios->find(1)->id,
+                'aplicativo'=> 'Sistema de Seguimiento de Aplicativos GGSI',
+                'alias'=> null,
+                'responsable'=> $users->find(1),
                 'pap'=> false,
-                'estatus'=> null,
-                'gerencia_linea'=> $gsos->id,
+                'descripcion'=> 'Monitoreo de avances de los proyectos de la GGSI',
+                'gerencia_id'=> $gsos,
             ],
             [
-                'nombre_aplicativo'=> 'Sistema Integral Geolocalización e Incidencias GGSI',
-                'abreviacion'=> null,
-                'descripcion'=> 'Centraliza y gestiona los reportes de incidencias entre las centrales CANTV',
-                'responsable'=> $usuarios->find(2)->id,
+                'aplicativo'=> 'Sistema Integral Geolocalización e Incidencias GGSI',
+                'alias'=> null,
+                'responsable'=> $users->find(2),
                 'pap'=> false,
-                'estatus'=> null,
-                'gerencia_linea'=> $gsos->id,
+                'descripcion'=> 'Centraliza y gestiona los reportes de incidencias entre las centrales CANTV',
+                'gerencia_id'=> $gsos,
             ],       
         ];
         

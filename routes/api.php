@@ -7,6 +7,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AplicativoController;
+use App\Http\Controllers\GerenciaController;
+use App\Http\Controllers\ActividadController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -96,9 +99,69 @@ Route::prefix('v1')->group(function () {
 
         /*
         |----------------------------------------------------------------------
+        | Módulo: Gerencias (/api/v1/gerencias)
+        |----------------------------------------------------------------------
+        */
+
+        Route::controller(GerenciaController::class)->prefix('gerencias')
+        ->missing(function () {
+            return response()->json(['message' => 'No encontrado'], 404);
+        })
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::post('/registro', 'store');
+            Route::get('/{id}', 'show');
+            Route::patch('/editar/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+        });
+
+        /*
+        |----------------------------------------------------------------------
+        | Módulo: Actividades (/api/v1/actividades)
+        |----------------------------------------------------------------------
+        */
+
+        Route::controller(ActividadController::class)->prefix('actividades')
+        ->missing(function () {
+            return response()->json(['message' => 'No encontrado'], 404);
+        })
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::post('/registro', 'store');
+            Route::get('/{id}', 'show');
+            Route::patch('/editar/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+        });
+
+        /*
+        |----------------------------------------------------------------------
         | Módulo: Roles y Permisos Spatie
         |----------------------------------------------------------------------
         */
+
+        Route::controller(RoleController::class)->prefix('roles')
+        ->missing(function () {
+            return response()->json(['message' => 'No encontrado'], 404);
+        })
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::post('/registro', 'store');
+            Route::get('/{id}', 'show');
+            Route::patch('/editar/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+        });
+
+        Route::controller(PermissionController::class)->prefix('permissions')
+        ->missing(function () {
+            return response()->json(['message' => 'No encontrado'], 404);
+        })
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::post('/registro', 'store');
+            Route::get('/{id}', 'show');
+            Route::patch('/editar/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+        });
 
     });
 

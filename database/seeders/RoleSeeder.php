@@ -13,27 +13,31 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+
+        if(!Permission::exists()) {
+            $this->command->error('No existen permisos registrados, por favor ejecuta PermissionSeeder primero.');
+            return;
+        }
+
+        // Rol Administrador
         $admin_role = Role::firstOrCreate([
             'name' => 'administrador',
             'guard_name' => 'api',
         ]);
 
         $admin_role->syncPermissions(Permission::all());
-
-        // $supervisor_role = Role::firstOrCreate([
-        //     'name' => 'Supervisor',
-        //     'guard_name' => 'api',
-        // ]);
-
-        // $permissions_supervisor = Permission::where('category', 'access')->orWhere('module', 'aplicativos')->get();
-        // $supervisor_role->syncPermissions($permissions_supervisor);
+        
+        // Rol Usuario
         
         $regular_user_role = Role::firstOrCreate([
             'name' => 'usuario',
             'guard_name' => 'api',
         ]);
 
-        $permissions_user = Permission::where('module', 'dashboard')->get();
-        $regular_user_role->syncPermissions($permissions_user);
+        $regular_user_role->syncPermissions([
+            'ver_dashboard',
+            'ver_aplicativos',
+            'ver_detalles_aplicativos',
+        ]);
     }
 }
