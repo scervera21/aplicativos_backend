@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('aplicativo',80);
             $table->string('alias',6)->nullable();
-            $table->foreignId('responsable')->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('responsable')->nullable()->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
             $table->boolean('pap');
             $table->string('estatus',20)->default('Sin Estatus');
             $table->string('descripcion',100)->nullable();

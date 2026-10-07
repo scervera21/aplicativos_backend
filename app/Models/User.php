@@ -116,9 +116,13 @@ class User extends Authenticatable implements JWTSubject
         $this->update(['status' => true]);
     }
 
-    // Relación con la tabla gerencias
     public function gerencia()
     {
-        return $this->belongsTo(Gerencia::class);
+        return $this->belongsTo(Gerencia::class);   // Un usuario pertenece a una gerencia
+    }
+
+    public function aplicativos()
+    {
+        return $this->hasMany(Aplicativo::class, 'responsable'); // Un usuario es responsable de muchos aplicativos
     }
 }

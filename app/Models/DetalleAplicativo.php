@@ -15,9 +15,9 @@ class DetalleAplicativo extends Model
         'aplicativo_id',
         'fecha_inicio',
         'fecha_fin',
-        'lenguajes_fronted',
+        'lenguajes_frontend',
         'lenguajes_backend',
-        'base_de_datos',
+        'bases_datos',
         'observaciones'
     ];
 

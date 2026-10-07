@@ -15,16 +15,12 @@ class Actividad extends Model
         'actividad',
         'creado_el',
         'culminado_el',
-        'area',
+        'unidad',
         'prioridad',
-        'colaboradores',
+        'estado',
         'completado',
         'comentarios',
         'aplicativo_id',
-    ];
-
-    protected $casts = [
-        'colaboradores' => 'array',
     ];
 
     public function aplicativos()
@@ -32,4 +28,8 @@ class Actividad extends Model
         return $this->belongsTo(Aplicativo::class); // Una actividad pertenece a un aplicativo
     }
 
+    public function gerencias()
+    {
+        return $this->belongsToMany(Gerencia::class, 'colaboradores', 'actividad_id', 'gerencia_id'); // En el modelo actividades se define la relación muchos a muchos con gerencia a traves de la tabla intermedia 'colaboradores' con los campos actividad_id y gerencia_id
+    }
 }

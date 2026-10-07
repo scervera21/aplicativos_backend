@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Aplicativo extends Model
 {
     use HasFactory;
+    
     protected $table = 'aplicativos';  // Especifica el nombre y esquema de la tabla en la base de datos
 
     protected $fillable = [
-        'nombre_aplicativo',
-        'abreviacion',
-        'descripcion',
+        'aplicativo',
+        'alias',
         'responsable',
         'pap',
         'estatus',
-        'gerencia_id',
+        'descripcion',
     ];
 
     public function detallesAplicativos()
@@ -30,8 +30,8 @@ class Aplicativo extends Model
         return $this->hasMany(Actividad::class);
     }
 
-    public function gerencia()
+    public function responsable()
     {
-        return $this->belongsTo(Gerencia::class, 'gerencia_linea');
+        return $this->belongsTo(User::class, 'responsable'); // Un aplicativo tiene un responsable
     }
 }
