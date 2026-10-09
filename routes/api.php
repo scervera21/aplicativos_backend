@@ -62,21 +62,57 @@ Route::prefix('v1')->group(function () {
         
         /*
         |----------------------------------------------------------------------
-        | Módulo: Usuarios (/api/v1/users)
+        | Proteccion de rutas usuarios, roles y permisos por middleware para usuario administrador
         |----------------------------------------------------------------------
         */
 
-        Route::controller(UserController::class)->prefix('users')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{user}', 'show');
-            Route::patch('/editar/{user}', 'update');
-            Route::delete('/{user}', 'destroy');
-            Route::get('/buscar/{user}', 'search');
+        Route::group(['middleware' => 'role:administrador', 'prefix' => 'admin'], function () {
+
+            // Usuarios (/api/v1/admin/users/)
+
+            Route::controller(UserController::class)->prefix('users')
+            ->missing(function () {
+                return response()->json(['message' => 'No encontrado'], 404);
+            })
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::post('/registro', 'store');
+                Route::get('/{user}', 'show');
+                Route::patch('/editar/{user}', 'update');
+                Route::delete('/{user}', 'destroy');
+                Route::get('/buscar/{user}', 'search');
+            });
+
+            // Roles (/api/v1/admin/roles/)
+            
+            Route::controller(RoleController::class)->prefix('roles')
+            ->missing(function () {
+                return response()->json(['message' => 'No encontrado'], 404);
+            })
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::post('/registro', 'store');
+                Route::get('/{role}', 'show');
+                Route::patch('/editar/{role}', 'update');
+                Route::delete('/{role}', 'destroy');
+                Route::get('/buscar/{role}', 'search');
+            });
+
+            // Permisos (/api/v1/admin/permissions/)
+            
+            Route::controller(PermissionController::class)->prefix('permissions')
+            ->missing(function () {
+                return response()->json(['message' => 'No encontrado'], 404);
+            })
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::post('/registro', 'store');
+                Route::get('/{permission}', 'show');
+                Route::patch('/editar/{permission}', 'update');
+                Route::delete('/{permission}', 'destroy');
+                Route::get('/buscar/{permission}', 'search');
+            });
+
         });
 
         /*
@@ -132,37 +168,5 @@ Route::prefix('v1')->group(function () {
             Route::patch('/editar/{id}', 'update');
             Route::delete('/{id}', 'destroy');
         });
-
-        /*
-        |----------------------------------------------------------------------
-        | Módulo: Roles y Permisos Spatie
-        |----------------------------------------------------------------------
-        */
-
-        Route::controller(RoleController::class)->prefix('roles')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
-        });
-
-        Route::controller(PermissionController::class)->prefix('permissions')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
-        });
-
     });
-
 });

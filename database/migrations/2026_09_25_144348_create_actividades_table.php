@@ -17,8 +17,9 @@ return new class extends Migration
             $table->date('creado_el')->default(now());
             $table->date('culminado_el')->nullable();
 
-            $table->enum('unidad', ['Levantamiento de información','Base de datos','Desarrollo','Infraestructura']);
             $table->enum('prioridad', ['Baja','Media','Alta']);
+
+            $table->foreignId('area_id')->constrained('security.areas')->onUpdate('cascade')->onDelete('set null');
 
             $table->enum('estado', ['Pendiente','En Proceso','Finalizado','Atrasado']);
             $table->boolean('completado');
