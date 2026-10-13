@@ -32,10 +32,12 @@ class PermissionController extends Controller
         return $this->successResponse('Permiso creado exitosamente', $permission);
     }
 
-    public function update(Request $request, Permission $permission)  // Se obtiene el id del permiso a actualizar
+    public function update(Request $request, $permissionId)  // Se obtiene el id del permiso a actualizar
     {
+        $permission = Permission::findOrFail($permissionId);
+
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:permissions,name,' . $permission->id,     // Ignora el id del permiso al verificar unicidad.
+            'name' => 'required|string|unique:permissions,name,' . $permission,     // Ignora el id del permiso al verificar unicidad.
             'category' => 'required|string',
             'module' => 'required|string'
         ]);

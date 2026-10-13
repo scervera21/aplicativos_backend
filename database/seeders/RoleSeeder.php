@@ -36,8 +36,8 @@ class RoleSeeder extends Seeder
 
         $regular_user_role->syncPermissions([
             'ver_dashboard',
-            'ver_aplicativos',
-            'ver_detalles_aplicativos',
+            'ver_usuarios',
+            'ver_gerencias',
         ]);
     }
 }

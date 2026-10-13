@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('security.users', function (Blueprint $table) {
             $table->id();
             $table->string('username',20)->unique()->index();
             $table->string('first_name', 20);

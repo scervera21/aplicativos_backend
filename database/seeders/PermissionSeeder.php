@@ -15,7 +15,7 @@ class PermissionSeeder extends Seeder
         // Listado de módulos y sus permisos
         $modules = [
             'dashboard' => ['ver'],
-            'aplicativos' => ['ver', 'crear', 'editar', 'eliminar', 'ver_detalles'],
+            'gerencias' => ['ver', 'crear', 'editar', 'eliminar'],
             'usuarios' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_roles'],
             'roles' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_permisos'],
             'permisos' => ['ver', 'crear', 'editar', 'eliminar'],

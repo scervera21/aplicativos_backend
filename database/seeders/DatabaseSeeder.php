@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AplicativoSeeder::class,
             DetalleAplicativoSeeder::class,
+            AreaSeeder::class,
             ActividadSeeder::class,
         ]);
     }

@@ -30,39 +30,22 @@ class UserController extends Controller
 
         $user = User::create($request->validated());
 
-        $this->assignRoles($user, $request->roles);
+        $user->syncRoles($request->roles);
 
         return $this->successResponse('Usuario creado exitosamente', $user);
-    }
-
-    public function assignRoles(User $user, array $roles)
-    {
-
-        $roleIds = [];
-        foreach ($roles as $role) {
-            $role = Role::where('name', $role)->first();
-            if ($role) {
-                $roleIds[] = $role->id;
-            }
-        }
-        $user->syncRoles($roleIds);
-
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $userId)
+    public function update(UserRequest $request, $userId)
     {
         $this->authorize('update', $userId);
 
-        $user = User::find($userId);
-
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
-        }
-
+        $user = User::findOrFail($userId);
+        
         $user->update($request->validated());
+        $user->syncRoles($request->roles);
 
         return $this->successResponse('Usuario actualizado exitosamente', $user);
     }
@@ -71,15 +54,11 @@ class UserController extends Controller
      * Remove the specified resource in storage.
      */
 
-    public function destroy(User $userId)
+    public function destroy($userId)
     {
         $this->authorize('delete', $userId);
 
-        $user = User::find($userId);
-
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
-        }
+        $user = User::findOrFail($userId);
 
         $user->delete();
 

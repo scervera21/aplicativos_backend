@@ -64,8 +64,6 @@ class RoleController extends Controller
 
         $role = Role::findOrFail($roleId);
 
-        $permissions = Permission::get();
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:roles,name,' . $role->id,     // Ignora el rol actual al verificar unicidad.
             'permission_names' => 'required|array',
@@ -78,11 +76,11 @@ class RoleController extends Controller
 
         $role->update([
             'name' => $request->name
-        ])->syncPermissions($permissions);
+        ])->syncPermissions($request->permission_names);
 
         return $this->successResponse('Rol actualizado exitosamente', [
             'role' => $role,
-            'permissions' => $permissions
+            'permission_names' => $request->permission_names
         ]);
     }
 

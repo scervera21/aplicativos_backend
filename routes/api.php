@@ -77,8 +77,8 @@ Route::prefix('v1')->group(function () {
             ->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
-                Route::patch('/editar/{user}', 'update');
-                Route::delete('/{user}', 'destroy');
+                Route::patch('/editar/{userId}', 'update');
+                Route::delete('/{userId}/delete', 'destroy');
             });
 
             // Roles (/api/v1/admin/roles/)
@@ -91,7 +91,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
                 Route::patch('/editar/{roleId}', 'update');
-                Route::delete('/{roleId}', 'destroy');
+                Route::delete('/{roleId}/delete', 'destroy');
             });
 
             // Permisos (/api/v1/admin/permisos/)
@@ -103,8 +103,8 @@ Route::prefix('v1')->group(function () {
             ->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
-                Route::patch('/editar/{permission}', 'update');
-                Route::delete('/{permission}', 'destroy'); 
+                Route::patch('/editar/{permissionId}', 'update');
+                Route::delete('/{permissionId}/delete', 'destroy'); 
             });
 
         });
