@@ -77,10 +77,8 @@ Route::prefix('v1')->group(function () {
             ->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
-                Route::get('/{user}', 'show');
                 Route::patch('/editar/{user}', 'update');
                 Route::delete('/{user}', 'destroy');
-                Route::get('/buscar/{user}', 'search');
             });
 
             // Roles (/api/v1/admin/roles/)
@@ -92,25 +90,21 @@ Route::prefix('v1')->group(function () {
             ->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
-                Route::get('/{role}', 'show');
-                Route::patch('/editar/{role}', 'update');
-                Route::delete('/{role}', 'destroy');
-                Route::get('/buscar/{role}', 'search');
+                Route::patch('/editar/{roleId}', 'update');
+                Route::delete('/{roleId}', 'destroy');
             });
 
-            // Permisos (/api/v1/admin/permissions/)
+            // Permisos (/api/v1/admin/permisos/)
             
-            Route::controller(PermissionController::class)->prefix('permissions')
+            Route::controller(PermissionController::class)->prefix('permisos')
             ->missing(function () {
                 return response()->json(['message' => 'No encontrado'], 404);
             })
             ->group(function () {
                 Route::get('/', 'index');
                 Route::post('/registro', 'store');
-                Route::get('/{permission}', 'show');
                 Route::patch('/editar/{permission}', 'update');
-                Route::delete('/{permission}', 'destroy');
-                Route::get('/buscar/{permission}', 'search');
+                Route::delete('/{permission}', 'destroy'); 
             });
 
         });

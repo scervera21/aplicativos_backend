@@ -9,21 +9,6 @@ class AplicativoRequest extends FormRequest
 {
 
     /**
-     * Prepare the data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        $papChecked = $this->has('pap');
-
-        $this->merge([
-            'pap'         => $papChecked,
-            // Si PAP = No, forzamos pap_estatus a null sin importar si el campo llega o no al request
-            // (los campos disabled en HTML no se envían en el formulario)
-            'pap_estatus' => $papChecked ? $this->input('pap_estatus') : null,
-        ]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -40,13 +25,13 @@ class AplicativoRequest extends FormRequest
                 Rule::unique('aplicativos', 'aplicativo')->ignore($this->route('id')), // Se ignora el id del registro actual para que no se compare consigo mismo
                 'string',
                 'between:4,80'
-            ],     
-            'tipo_software' => ['bail','nullable','string','between:4,30'],
-            'fecha_inicio' => ['bail', 'required', 'date'],
-            'fecha_final' => ['bail', 'nullable', 'date', 'after:fecha_inicio'],
-            'estatus' => ['bail', 'required'],
-            'pap' => ['bail', 'nullable','boolean'],
-            'pap_estatus' => ['bail', 'nullable', 'required_if:pap,true', 'between:4,60'],
+            ],
+            'alias' => ['bail','nullable','string','between:2,8'],
+            'descripcion' => ['bail','nullable','string','max:100'],
+            'estatus' => ['bail', 'nullable', 'max:20'],
+            'pap' => ['bail', 'boolean'],
+            'responsable' => ['bail','nullable','exists:security.users,id'],
+            'gerencia_id' => ['bail','nullable','exists:public.gerencias,id'],
         ];
     }
 
@@ -57,13 +42,13 @@ class AplicativoRequest extends FormRequest
             'aplicativo.unique' => 'Este aplicativo ya esta registrado',
             'aplicativo.between' => 'El nombre del aplicativo debe tener entre 4 y 80 caracteres',
             'aplicativo.string' => 'El nombre del aplicativo debe ser una cadena de texto',
-            'tipo_software.between' => 'El tipo de software debe tener entre 4 y 30 caracteres',
-            'tipo_software.string' => 'El tipo de software debe ser una cadena de texto',
-            'fecha_inicio.required' => 'La fecha de inicio es obligatoria',
-            'fecha_final.after' => 'La fecha final debe ser mayor a la fecha inicial',
-            'estatus.required' => 'El estatus es obligatorio',
-            'pap_estatus.required_if' => 'El estatus PAP es obligatorio',
-            'pap_estatus.between' => 'El estatus PAP debe tener entre 4 y 60 caracteres',
+            'alias.string' => 'El alias del aplicativo debe ser una cadena de texto',
+            'alias.between' => 'El alias del aplicativo debe tener entre 2 y 8 caracteres',
+            'descripcion.string' => 'La descripcion del aplicativo debe ser una cadena de texto',
+            'descripcion.max' => 'La descripcion del aplicativo debe tener como maximo 100 caracteres',
+            'pap.boolean' => 'El campo PAP debe ser verdadero o falso',
+            'responsable.exists' => 'El responsable no existe',
+            'gerencia_id.exists' => 'La gerencia no existe',
         ];
     }
 }

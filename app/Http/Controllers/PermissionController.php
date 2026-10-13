@@ -4,78 +4,57 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Validator;
 
 class PermissionController extends Controller
 {
+
     public function index()
     {
         $permissions = Permission::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Permisos obtenidos exitosamente',
-            'data' => $permissions,
-        ]);
+        return $this->successResponse('Permisos obtenidos exitosamente', $permissions);
     }
 
     public function store(Request $request)
     {
-        $this->authorize('create', Permission::class);
-
-        $request->validate([
-            'name' => 'required|string|max:10',
-            'category' => 'required|string|max:10',
-            'module' => 'required|string|max:10'
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:permissions,name',
+            'category' => 'required|string',
+            'module' => 'required|string'
         ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Error en la validación', 422, $validator->errors());
+        }
 
         $permission = Permission::create($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Permiso creado exitosamente',
-            'data' => $permission,
-        ], 201);
+        return $this->successResponse('Permiso creado exitosamente', $permission);
     }
 
-    public function show(Permission $permission)
+    public function update(Request $request, Permission $permission)  // Se obtiene el id del permiso a actualizar
     {
-        $this->authorize('view', $permission);
-
-        return response()->json([
-            'message' => 'Permiso obtenido exitosamente',
-            'data' => $permission,
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:permissions,name,' . $permission->id,     // Ignora el id del permiso al verificar unicidad.
+            'category' => 'required|string',
+            'module' => 'required|string'
         ]);
-    }
 
-    public function update(Request $request, Permission $permission)
-    {
-        $this->authorize('update', $permission);
-
-        $permission = Permission::findOrFail($permission);
-
-        if(!$permission) {
-            return response()->json([
-                'message' => 'Permiso no encontrado',
-            ], 404);
+        if ($validator->fails()) {
+            return $this->errorResponse('Error en la validación', 422, $validator->errors());
         }
 
         $permission->update($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Permiso actualizado exitosamente',
-            'data' => $permission,
-        ]);
+        return $this->successResponse('Permiso actualizado exitosamente', $permission);
     }
 
-    public function destroy(Permission $permission)
+    public function destroy($permissionId)
     {
-        $this->authorize('delete', $permission);
+        $permission = Permission::findOrFail($permissionId);
 
         $permission->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Permiso eliminado exitosamente',
-        ]);
+        return $this->successResponse('Permiso eliminado exitosamente');
     }
 }

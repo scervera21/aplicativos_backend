@@ -16,12 +16,9 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::all();
+        $users = User::all()->load('roles');
 
-        return response()->json([
-            "message" => 'Datos obtenidos exitosamente',
-            "data" => $users
-        ], 200);
+        return $this->successResponse('Usuarios obtenidos exitosamente', $users);
     }
 
     /**
@@ -33,112 +30,59 @@ class UserController extends Controller
 
         $user = User::create($request->validated());
 
-        if($request->has('role')) {
-            $role = Role::where('name', $request->role);
-            if($role) {
-                $user->assignRole($role);
-            }
-        } else {
-            $user->assignRole('usuario');
-        }
-        
-        return response()->json([
-            "success" => true,
-            "message" => 'Usuario guardado exitosamente',
-            "data" => $user
-        ], 201);
+        $this->assignRoles($user, $request->roles);
+
+        return $this->successResponse('Usuario creado exitosamente', $user);
     }
 
-    /**
-     * Display the specified resource.
-     */
-
-    public function show(User $user)
+    public function assignRoles(User $user, array $roles)
     {
-        $this->authorize('view', $user);
 
-        User::findOrFail($user);
-
-        if(!$user) {
-            return response()->json([
-                "message" => 'Usuario no encontrado',
-            ], 404);
+        $roleIds = [];
+        foreach ($roles as $role) {
+            $role = Role::where('name', $role)->first();
+            if ($role) {
+                $roleIds[] = $role->id;
+            }
         }
+        $user->syncRoles($roleIds);
 
-        return response()->json([
-            "message" => 'Usuario obtenido exitosamente',
-            "data" => $user
-        ]);
-    }
-
-    public function search($user) {
-
-        $username = User::where('username', $user)->get();
-
-        if (!$username) {
-            return response()->json([
-                "message" => 'Usuario no encontrado',
-            ], 404);
-        }
-        return response()->json([
-            "message" => 'Usuario obtenido exitosamente',
-            "data" => $username
-        ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $user)
+    public function update(UserRequest $request, User $userId)
     {
-        $this->authorize('update', $user);
+        $this->authorize('update', $userId);
 
-        User::findOrFail($user);
+        $user = User::find($userId);
 
-        if(!$user) {
-            return response()->json([
-                "message" => 'Usuario no encontrado',
-            ], 404);
+        if (!$user) {
+            return $this->errorResponse('Usuario no encontrado', 404);
         }
 
         $user->update($request->validated());
-        
-        if($request->has('role')) {
-            $role = Role::where('name', $request->role);
-            if($role) {
-                $user->syncRoles($role);
-            }
-        }
-        
-        return response()->json([
-            "success" => true,
-            "message" => 'Usuario actualizado exitosamente',
-            "data" => $user,
-            "rol" => $user->role->pluck('name'),
-        ]);
+
+        return $this->successResponse('Usuario actualizado exitosamente', $user);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource in storage.
      */
 
-    public function destroy(User $user)
+    public function destroy(User $userId)
     {
-        $this->authorize('delete', $user);
+        $this->authorize('delete', $userId);
 
-        User::findOrFail($user);
+        $user = User::find($userId);
 
-        if(!$user) {
-            return response()->json([
-                "message" => 'Usuario no encontrado',
-            ], 404);
+        if (!$user) {
+            return $this->errorResponse('Usuario no encontrado', 404);
         }
 
         $user->delete();
 
-        return response()->json([
-            "success" => true,
-            "message" => 'Usuario eliminado exitosamente',
-        ]);
+        return $this->successResponse('Usuario eliminado exitosamente');
     }
 }

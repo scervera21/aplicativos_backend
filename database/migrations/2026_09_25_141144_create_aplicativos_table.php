@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
             $table->string('aplicativo',80);
-            $table->string('alias',6)->nullable();
+            $table->string('alias',8)->nullable();
             $table->boolean('pap');
             $table->string('estatus',20)->default('Sin Estatus');
             $table->string('descripcion',100)->nullable();
