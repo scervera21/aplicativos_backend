@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -16,9 +17,13 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::all()->load('roles');
+        $users = User::with('roles')->get();
+        $roles = Role::all();
 
-        return $this->successResponse('Usuarios obtenidos exitosamente', $users);
+        return $this->successResponse('Usuarios obtenidos exitosamente', [
+            'users' => $users,
+            'roles' => $roles
+        ]);
     }
 
     /**
@@ -30,9 +35,20 @@ class UserController extends Controller
 
         $user = User::create($request->validated());
 
-        $user->syncRoles($request->roles);
+        // ASIGNAR ROLES
 
-        return $this->successResponse('Usuario creado exitosamente', $user);
+        $roles = Role::whereIn('name', $request->roles)->pluck('id')->toArray();
+
+        if (!$roles) {
+            return $this->errorResponse('No se pudieron obtener los roles', 404);
+        }
+
+        $user->syncRoles($roles);
+
+        return $this->successResponse('Usuario creado exitosamente', [
+            'user' => $user,
+            'roles' => $roles->pluck('name')
+        ]);
     }
 
     /**
@@ -42,12 +58,28 @@ class UserController extends Controller
     {
         $this->authorize('update', $userId);
 
-        $user = User::findOrFail($userId);
-        
-        $user->update($request->validated());
-        $user->syncRoles($request->roles);
+        $user = User::find($userId);
 
-        return $this->successResponse('Usuario actualizado exitosamente', $user);
+        if (!$user) {
+            return $this->errorResponse('Usuario no encontrado', 404);
+        }
+
+        $user->update($request->validated());
+
+        // ACTUALIZAR ROLES
+
+        $roles = Role::whereIn('name', $request->roles)->pluck('id')->toArray();
+
+        if (!$roles) {
+            return $this->errorResponse('No se pudieron obtener los roles', 404);
+        }
+        
+        $user->syncRoles($roles);
+
+        return $this->successResponse('Usuario actualizado exitosamente', [
+            'user' => $user,
+            'roles' => $roles->pluck('name')
+        ]);
     }
 
     /**
@@ -58,7 +90,11 @@ class UserController extends Controller
     {
         $this->authorize('delete', $userId);
 
-        $user = User::findOrFail($userId);
+        $user = User::find($userId);
+
+        if (!$user) {
+            return $this->errorResponse('Usuario no encontrado', 404);
+        }
 
         $user->delete();
 

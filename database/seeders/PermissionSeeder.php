@@ -16,8 +16,8 @@ class PermissionSeeder extends Seeder
         $modules = [
             'dashboard' => ['ver'],
             'gerencias' => ['ver', 'crear', 'editar', 'eliminar'],
-            'usuarios' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_roles'],
-            'roles' => ['ver', 'crear', 'editar', 'eliminar', 'asignar_permisos'],
+            'usuarios' => ['ver', 'crear', 'editar', 'eliminar'],
+            'roles' => ['ver', 'crear', 'editar', 'eliminar'],
             'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
         ];
 

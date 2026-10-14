@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Actividad;
 use App\Models\Aplicativo;
+use App\Models\Area;
 
 class ActividadSeeder extends Seeder
 {
@@ -19,11 +20,19 @@ class ActividadSeeder extends Seeder
             $this->command->error('No existen aplicativos registrados, por favor ejecuta AplicativoSeeder primero.');
             return;
         }
+        
+        if(!Area::exists()) {
+            $this->command->error('No existen areas registradas, por favor ejecuta AreaSeeder primero.');
+            return;
+        }
 
-        $sysaplicativos = Aplicativo::where('nombre_aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first();
-        $geolocalizacion = Aplicativo::where('nombre_aplicativo', 'Sistema Integral Geolocalización e Incidencias GGSI')->first();
 
-        if (!($sysaplicativos && $geolocalizacion)) {
+        $sysaplicativos = Aplicativo::where('aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first()->id;
+        $geolocalizacion = Aplicativo::where('aplicativo', 'Sistema Integral Geolocalización e Incidencias GGSI')->first()->id;
+        $areadesarrollo = Area::where('nombre_area', 'Desarrollo')->first()->id;
+        $areabd = Area::where('nombre_area', 'Base de Datos')->first()->id;
+
+        if (!($sysaplicativos && $geolocalizacion && $areadesarrollo && $areabd)) {
             $this->command->error('Aplicativo no encontrado, revisa que AplicativoSeeder se haya ejecutado correctamente.');
             return;
         }
@@ -31,23 +40,18 @@ class ActividadSeeder extends Seeder
         $actividades = [
             [
                 'actividad' => 'Mapeo de base de datos y carga de datos',
-                'creado_el' => '2026-10-05',
-                'culminado_el' => null,
-                'unidad' => 'Base de Datos',
                 'prioridad' => 'Alta',
-                'estado' => 'En Proceso',
                 'completado' => false,
-                'aplicativo_id' => $sysaplicativos->id,
+                'aplicativo_id' => $sysaplicativos,
+                'area_id' => $areabd,
             ],
             [
-                'actividad' => 'Elaboracion de diagrama dinamico de niveles de riesgo',
-                'creado_el' => '2026-10-02',
-                'culminado_el' => '2026-10-03',
-                'unidad'=> 'Desarrollo',
+                'actividad' => 'Rediseño de menu dinamico de reportes de incidencias',
                 'prioridad'=> 'Alta',
                 'estado' => 'Finalizado',
                 'completado' => true,
-                'aplicativo_id'=> $geolocalizacion->id,
+                'aplicativo_id'=> $geolocalizacion,
+                'area_id' => $areadesarrollo,
             ],
         ];
 

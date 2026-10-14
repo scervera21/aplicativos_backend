@@ -9,7 +9,7 @@ class Gerencia extends Model
 {
     use HasFactory;
 
-    protected $table = 'gerencias';  // Especifica el nombre de la tabla en la base de datos
+    protected $table = 'public.gerencias';
 
     protected $fillable = [
         'gerencia',
@@ -23,11 +23,11 @@ class Gerencia extends Model
 
     public function aplicativos()
     {
-        return $this->hasMany(Aplicativo::class); // Una gerencia tiene muchos aplicativos
+        return $this->hasMany(Aplicativo::class); // Una gerencia posee muchos aplicativos
     }
 
     public function actividades()
     {
-        return $this->belongsToMany(Actividad::class); // Una gerencia puede tener muchas actividades
+        return $this->belongsToMany(Actividad::class); // Una gerencia puede colaborar en muchas actividades
     }
 }

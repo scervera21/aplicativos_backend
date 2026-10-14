@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends SpatieRole
 {
-    protected $table = 'security.roles';
+    protected $table = 'security.roles';    // Especifica el nombre y esquema de la tabla en la base de datos
 
     public function users() : BelongsToMany
     {

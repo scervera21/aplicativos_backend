@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
-            $gerencia = Gerencia::firstOrFail()->id;
+            $gerencia = Gerencia::first()->id;
         }
 
         if(!Role::exists()) {

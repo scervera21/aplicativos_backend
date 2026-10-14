@@ -9,7 +9,7 @@ class DetalleAplicativo extends Model
 {
     use HasFactory;
 
-    protected $table = 'detalles_aplicativos';
+    protected $table = 'public.detalles_aplicativos';
 
     protected $fillable = [
         'aplicativo_id',
@@ -23,6 +23,6 @@ class DetalleAplicativo extends Model
 
     public function aplicativos()
     {
-        return $this->belongsTo(Aplicativo::class);
+        return $this->belongsTo(Aplicativo::class);     // Un detalle de aplicativo pertenece a un aplicativo
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->foreignId('area_id')->constrained('security.areas')->onUpdate('cascade')->onDelete('set null');
 
-            $table->enum('estado', ['Pendiente','En Proceso','Finalizado','Atrasado']);
+            $table->enum('estado', ['Pendiente','Finalizado','Atrasado'])->default('Pendiente');
             $table->boolean('completado');
 
             $table->text('comentarios')->nullable();
@@ -36,7 +36,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropForeign(['aplicativo_id']);
-        Schema::dropColumn('aplicativo_id');
+        Schema::dropForeign(['area_id']);
+        Schema::dropColumn(['aplicativo_id','area_id']);
         Schema::dropIfExists('public.actividades');
     }
 };

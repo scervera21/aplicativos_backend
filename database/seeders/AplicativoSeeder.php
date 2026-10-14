@@ -21,7 +21,7 @@ class AplicativoSeeder extends Seeder
             $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
-            $gsos = Gerencia::firstOrFail()->id;
+            $gerencia = Gerencia::first()->id;
         }
 
         if(!User::exists()) {
@@ -38,7 +38,7 @@ class AplicativoSeeder extends Seeder
                 'responsable'=> $users->find(1),
                 'pap'=> false,
                 'descripcion'=> 'Monitoreo de avances de los proyectos de la GGSI',
-                'gerencia_id'=> $gsos,
+                'gerencia_id'=> $gerencia,
             ],
             [
                 'aplicativo'=> 'Sistema Integral Geolocalización e Incidencias GGSI',
@@ -46,7 +46,7 @@ class AplicativoSeeder extends Seeder
                 'responsable'=> $users->find(2),
                 'pap'=> false,
                 'descripcion'=> 'Centraliza y gestiona los reportes de incidencias entre las centrales CANTV',
-                'gerencia_id'=> $gsos,
+                'gerencia_id'=> $gerencia,
             ],       
         ];
         

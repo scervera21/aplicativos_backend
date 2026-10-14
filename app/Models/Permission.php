@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Permission extends SpatiePermission
 {
-    protected $table = 'security.permissions';
+    protected $table = 'security.permissions';  // Especifica el nombre y esquema de la tabla en la base de datos
 
     protected $fillable = [
         'name',
         'guard_name',
-        'category',    // 'access' para ver módulos, 'action' para operaciones CRUD
-        'module',  // URL del módulo asociado
-        'status',  // Habilitado/Deshabilitado (boolean)
+        'category',    // 'access' | 'action'
+        'module',  // módulo asociado
+        'status',
         'created_at',
         'updated_at'
     ];

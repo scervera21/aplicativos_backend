@@ -9,13 +9,13 @@ class Actividad extends Model
 {
     use HasFactory;
     
-    protected $table = 'actividades';  // Especifica el nombre de la tabla en la base de datos
+    protected $table = 'public.actividades';  // Especifica el nombre de la tabla en la base de datos
 
     protected $fillable = [
         'actividad',
         'creado_el',
         'culminado_el',
-        'unidad',
+        'area_id',
         'prioridad',
         'estado',
         'completado',
@@ -31,5 +31,10 @@ class Actividad extends Model
     public function gerencias()
     {
         return $this->belongsToMany(Gerencia::class, 'colaboradores', 'actividad_id', 'gerencia_id'); // En el modelo actividades se define la relación muchos a muchos con gerencia a traves de la tabla intermedia 'colaboradores' con los campos actividad_id y gerencia_id
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class); // una actividad pertenece a un area
     }
 }
