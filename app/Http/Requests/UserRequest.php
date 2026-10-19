@@ -27,7 +27,7 @@ class UserRequest extends FormRequest
             'password' => ['bail','required', Password::defaults(), 'max:25'],
             'gerencia_id' => ['bail','required','exists:public.gerencias,id'],
             'roles' => ['bail','required','array','min:1'],
-            'roles.*' => ['bail','exists:roles,id'],
+            'roles.*' => ['bail','exists:security.roles'],
         ];
     }
 
@@ -53,7 +53,6 @@ class UserRequest extends FormRequest
             'gerencia_id.exists' => 'La gerencia no existe',
             'roles.required' => 'El rol es obligatorio',
             'roles.min' => 'Debe seleccionar al menos un rol',
-            'roles.array' => 'El rol debe ser un array',
             'roles.*.exists' => 'El rol no existe',
         ];
     }

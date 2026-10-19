@@ -18,7 +18,8 @@ class PermissionSeeder extends Seeder
             'gerencias' => ['ver', 'crear', 'editar', 'eliminar'],
             'usuarios' => ['ver', 'crear', 'editar', 'eliminar'],
             'roles' => ['ver', 'crear', 'editar', 'eliminar'],
-            'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
+            'aplicativos' => ['ver', 'crear', 'editar', 'eliminar','ver_detalles'],
+            'actividades' => ['ver', 'crear', 'editar', 'eliminar'],
         ];
 
         foreach ($modules as $module => $permissions) {     // $variable => $value
@@ -27,7 +28,8 @@ class PermissionSeeder extends Seeder
                 // Itera sobre los permisos ($permission => 'nombre del permiso')
                 Permission::firstOrCreate([
                     'name' => $permission . '.' . $module,
-                    'guard_name' => 'api',
+                    'guard' => 'api',
+                    'category' => $permission === 'ver' ? 'access' : 'action',
                     'module' => $module
                 ]);
             }

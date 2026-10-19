@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AplicativoController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\ActividadController;
@@ -92,19 +91,6 @@ Route::prefix('v1')->group(function () {
                 Route::post('/registro', 'store');
                 Route::patch('/editar/{roleId}', 'update');
                 Route::delete('/{roleId}/delete', 'destroy');
-            });
-
-            // Permisos (/api/v1/admin/permisos/)
-            
-            Route::controller(PermissionController::class)->prefix('permisos')
-            ->missing(function () {
-                return response()->json(['message' => 'No encontrado'], 404);
-            })
-            ->group(function () {
-                Route::get('/', 'index');
-                Route::post('/registro', 'store');
-                Route::patch('/editar/{permissionId}', 'update');
-                Route::delete('/{permissionId}/delete', 'destroy'); 
             });
 
         });

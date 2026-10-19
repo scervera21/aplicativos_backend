@@ -19,6 +19,7 @@ class PermissionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:security.permissions',
+            'category' => 'required|string',
             'module' => 'required|string'
         ]);
 
@@ -31,12 +32,17 @@ class PermissionController extends Controller
         return $this->successResponse('Permiso creado exitosamente', $permission);
     }
 
-    public function update(Request $request, $permissionId)  // Se obtiene el id del permiso a actualizar
+    public function update(Request $request, Permission $permissionId)  // Se obtiene el id del permiso a actualizar
     {
-        $permission = Permission::findOrFail($permissionId);
+        $permission = Permission::find($permissionId);
+
+        if (!$permission) {
+            return $this->errorResponse('Permiso no encontrado', 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:security.permissions' . $permission,     // Ignora el id del permiso al verificar unicidad.
+            'category' => 'required|string',
             'module' => 'required|string'
         ]);
 
@@ -51,10 +57,13 @@ class PermissionController extends Controller
 
     public function destroy($permissionId)
     {
-        $permission = Permission::findOrFail($permissionId);
+        $permission = Permission::find($permissionId);
 
-        $permission->delete();
-
-        return $this->successResponse('Permiso eliminado exitosamente');
+        if (!$permission) {
+            return $this->errorResponse('Permiso no encontrado', 404);
+        } else {
+            $permission->delete();
+            return $this->successResponse('Permiso eliminado exitosamente');
+        }
     }
 }
