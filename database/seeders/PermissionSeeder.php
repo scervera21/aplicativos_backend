@@ -21,12 +21,13 @@ class PermissionSeeder extends Seeder
             'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
         ];
 
-        foreach ($modules as $module => $permissions) {
-            foreach ($permissions as $permission) {
+        foreach ($modules as $module => $permissions) {     // $variable => $value
+            // Itera sobre los módulos y sus permisos ($module => 'nombre del módulo' | $permissions => 'array de permisos')             
+            foreach ($permissions as $permission) {             
+                // Itera sobre los permisos ($permission => 'nombre del permiso')
                 Permission::firstOrCreate([
-                    'name' => $permission . '_' . $module,
+                    'name' => $permission . '.' . $module,
                     'guard_name' => 'api',
-                    'category' => $permission == 'ver' ? 'access' : 'action',
                     'module' => $module
                 ]);
             }

@@ -21,8 +21,8 @@ class UserRequest extends FormRequest
 
         return [
             'username' => ['bail','required', 'string', 'max:20', Rule::unique('security.users', 'username')->ignore($id)],
-            'first_name' => ['bail','required','string'],
-            'last_name' => ['bail','required','string'],
+            'first_name' => ['bail','required_if:username','string'],
+            'last_name' => ['bail','required_if:first_name', 'string'],
             'email' => ['bail','required', 'string', 'email', Rule::unique('security.users', 'email')->ignore($id)],
             'password' => ['bail','required', Password::defaults(), 'max:25'],
             'gerencia_id' => ['bail','required','exists:public.gerencias,id'],
@@ -37,8 +37,8 @@ class UserRequest extends FormRequest
             'username.required' => 'El nombre de usuario es obligatorio',
             'username.unique' => 'El nombre de usuario ya existe',
             'username.max' => 'El nombre de usuario debe tener como maximo 20 caracteres',
-            'first_name.required' => 'El nombre es obligatorio',
-            'last_name.required' => 'El apellido es obligatorio',
+            'first_name.required_if' => 'El nombre es obligatorio',
+            'last_name.required_if' => 'El apellido es obligatorio',
             'email.required' => 'El correo electronico es obligatorio',
             'email.email' => 'El correo electronico debe ser valido',
             'email.unique' => 'El correo electronico ya existe',

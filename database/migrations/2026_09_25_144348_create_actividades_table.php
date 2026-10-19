@@ -23,7 +23,6 @@ return new class extends Migration
 
             $table->enum('estado', ['Pendiente','Finalizado','Atrasado'])->default('Pendiente');
             $table->boolean('completado');
-
             $table->text('comentarios')->nullable();
             $table->foreignId('aplicativo_id')->constrained('public.aplicativos')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

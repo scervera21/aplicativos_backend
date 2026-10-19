@@ -11,22 +11,13 @@ class Permission extends SpatiePermission
 
     protected $fillable = [
         'name',
-        'guard_name',
-        'category',    // 'access' | 'action'
-        'module',  // módulo asociado
-        'status',
-        'created_at',
-        'updated_at'
+        'guard',
+        'module',
+        'status'
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
-
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+    protected $attributes = [
+        'guard' => 'api'
     ];
 
     public function roles() : BelongsToMany

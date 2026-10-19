@@ -122,9 +122,9 @@ Route::prefix('v1')->group(function () {
         ->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
+            Route::get('/{aplicativoId}/detalles', 'show'); // para ver detalles de un aplicativo
+            Route::patch('/editar/{aplicativoId}', 'update');
+            Route::delete('/{aplicativoId}/delete', 'destroy');
         });
 
         /*

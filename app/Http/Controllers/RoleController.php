@@ -25,9 +25,9 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:roles,name',
+            'name' => 'required|string|unique:security.roles|uppercase',
             'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,name',
+            'permissions.*' => 'exists:security.permissions,name',
         ]);
 
         if ($validator->fails()) {
@@ -71,9 +71,9 @@ class RoleController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:roles,name,' . $role->id,     // Ignora el rol actual al verificar unicidad.
+            'name' => 'required|string|unique:security.roles' . $role->id . '|uppercase',     // Ignora el rol actual al verificar unicidad.
             'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,name',
+            'permissions.*' => 'exists:security.permissions,name',
         ]);
 
         if ($validator->fails()) {

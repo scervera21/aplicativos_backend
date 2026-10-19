@@ -23,6 +23,12 @@ class Actividad extends Model
         'aplicativo_id',
     ];
 
+    protected $casts = [
+        'creado_el' => 'date',
+        'culminado_el' => 'date',
+        'completado' => 'boolean',
+    ];
+
     public function aplicativos()
     {
         return $this->belongsTo(Aplicativo::class); // Una actividad pertenece a un aplicativo

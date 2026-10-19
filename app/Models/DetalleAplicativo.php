@@ -21,6 +21,11 @@ class DetalleAplicativo extends Model
         'observaciones'
     ];
 
+    protected $casts = [
+        'fecha_inicio' => 'date',
+        'fecha_fin' => 'date',
+    ];
+
     public function aplicativos()
     {
         return $this->belongsTo(Aplicativo::class);     // Un detalle de aplicativo pertenece a un aplicativo

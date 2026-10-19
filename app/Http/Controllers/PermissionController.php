@@ -18,8 +18,7 @@ class PermissionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:permissions,name',
-            'category' => 'required|string',
+            'name' => 'required|string|unique:security.permissions',
             'module' => 'required|string'
         ]);
 
@@ -37,8 +36,7 @@ class PermissionController extends Controller
         $permission = Permission::findOrFail($permissionId);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:permissions,name,' . $permission,     // Ignora el id del permiso al verificar unicidad.
-            'category' => 'required|string',
+            'name' => 'required|string|unique:security.permissions' . $permission,     // Ignora el id del permiso al verificar unicidad.
             'module' => 'required|string'
         ]);
 
