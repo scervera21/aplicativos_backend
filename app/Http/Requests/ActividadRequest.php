@@ -22,14 +22,14 @@ class ActividadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'actividad' => ['bail','required','string'],
-            'creado_el' => ['bail','required','date'],
-            'culminado_el' => ['bail','required','date'],
-            'area_id' => ['bail','required','exists:public.areas,id'],
-            'prioridad' => ['bail','required','in:baja,media,alta'],
-            'estado' => ['bail','required','in:Pendiente,Finalizado,Atrasado'],
-            'completado' => ['bail','required'],
-            'comentarios' => ['bail','required','string'],
+            'actividad' => ['required','string'],
+            'creado_el' => ['required','date'],
+            'culminado_el' => ['required','date'],
+            'area_id' => ['required','exists:public.areas,id'],
+            'prioridad' => ['required','in:baja,media,alta'],
+            'estado' => ['required','in:Pendiente,Finalizado,Atrasado'],
+            'completado' => ['required'],
+            'comentarios' => ['required','string'],
             'aplicativo_id' => ['bail','required','exists:public.aplicativos,id'],
         ];
     }
@@ -54,29 +54,5 @@ class ActividadRequest extends FormRequest
             'aplicativo_id.required' => 'El aplicativo es obligatorio',
             'aplicativo_id.exists' => 'El aplicativo no existe',
         ];
-    }
-
-    public function attributes(): array
-    {
-        return [
-            'actividad' => 'actividad',
-            'creado_el' => 'fecha de creacion',
-            'culminado_el' => 'fecha de culminacion',
-            'area_id' => 'area',
-            'prioridad' => 'prioridad',
-            'estado' => 'estado',
-            'completado' => 'estado de completado',
-            'comentarios' => 'comentarios',
-            'aplicativo_id' => 'aplicativo',
-        ];
-    }
-
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            if ($this->creado_el > $this->culminado_el) {
-                $validator->errors()->add('creado_el', 'La fecha de creacion debe ser menor a la fecha de culminacion');
-            }
-        });
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,11 +15,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles')->get();
 
-        return $this->successResponse('Usuarios obtenidos exitosamente', [
-            'users' => $users,
-        ]);
+        try {
+            $users = User::with('roles', 'gerencia')->get();
+
+            return response()->json([
+                'users' => $users,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los usuarios',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -26,36 +35,60 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        try {
+            $user = User::create($request->validated());
 
-        $user = User::create($request->validated());
+            if ($request->roles) {
+                $user->syncRoles($request->roles);
+            }
 
-        $user->syncRoles($request->roles);
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
 
-        return $this->successResponse('Usuario creado exitosamente', [
-            'user' => $user,
-        ]);
+            return response()->json([
+                'message' => 'Usuario creado exitosamente',
+                'user' => $user->load('roles', 'gerencia'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $userId)
+    public function update(UserRequest $request, $userId)
     {
+        try {
 
-        $roles = Role::all();
-        $user = User::find($userId)->load('roles');
+            $user = User::find($userId)->load('roles', 'gerencia');
 
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
+            $user->update($request->validated());
+
+            if ($request->roles) {
+                $user->syncRoles($request->roles);
+            }
+
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+
+            return response()->json([
+                'message' => 'Usuario actualizado exitosamente',
+                'user' => $user->load('roles', 'gerencia'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user->update($request->validated());
-
-        $user->syncRoles($request->roles);
-
-        return $this->successResponse('Usuario actualizado exitosamente', [
-            'user' => $user,
-        ]);
     }
 
     /**
@@ -64,18 +97,18 @@ class UserController extends Controller
 
     public function destroy($userId)
     {
+        try {
 
-        $user = User::find($userId);
-
-        /* Si el usuario autenticado tiene rol de administrador no se puede eliminar hasta que 
-            asigne un nuevo usuario administrador
-        */
-
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
-        } else {
+            $user = User::find($userId);
             $user->delete();
-            return $this->successResponse('Usuario eliminado exitosamente');
+            return response()->json([
+                'message' => 'Usuario eliminado exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

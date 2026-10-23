@@ -11,77 +11,111 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = Role::with('permissions')->get();
+        try {
+            $roles = Role::with('permissions')->get();
 
-        return $this->successResponse('Roles obtenidos exitosamente', [
-            'roles' => $roles
-        ]);
+            return response()->json([
+                'roles' => $roles
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los roles',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:security.roles|uppercase',
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:security.permissions',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|unique:security.roles|uppercase',
+                'permissions' => 'nullable|array',
+                'permissions.*' => 'exists:security.permissions',
+            ]);
 
-        if ($validator->fails()) {
-            return $this->errorResponse('Error en la validación', 422, $validator->errors());
+            if ($validator->fails()) {
+                return $this->errorResponse('Error en la validación', 422, $validator->errors());
+            }
+
+            $role = Role::create([
+                'name' => $request->name
+            ]);
+
+            if ($request->permissions) {
+                $role->permissions()->sync($request->permissions);
+            }
+
+            return response()->json([
+                'message' => 'Rol creado exitosamente',
+                'role' => $role,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el rol',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $role = Role::create([
-            'name' => $request->name
-        ]);
-
-        $role->permissions()->sync($request->permissions);
-
-        return $this->successResponse('Rol creado exitosamente', [
-            'role' => $role,
-        ]);
     }
 
 
-    public function update(Request $request, Role $roleId)
+    public function update(Request $request, $roleId)
     {
-        $role = Role::find($roleId)->load('permissions');
+        try {
 
-        if (!$role) {
-            return $this->errorResponse('Rol no encontrado', 404);
+            $role = Role::find($roleId)->load('permissions');
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|unique:security.roles' . $role . '|uppercase',     // Ignora el rol actual al verificar unicidad.
+                'permissions' => 'nullable|array',
+                'permissions.*' => 'exists:security.permissions,name',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Error en la validación',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $role->update([
+                'name' => $request->name
+            ]);
+
+            if ($request->permissions) {
+                $role->permissions()->sync($request->permissions);
+            }
+
+            return response()->json([
+                'message' => 'Rol actualizado exitosamente',
+                'role' => $role,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el rol',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:security.roles' . $role . '|uppercase',     // Ignora el rol actual al verificar unicidad.
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:security.permissions,name',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->errorResponse('Error en la validación', 422, $validator->errors());
-        }
-
-        $role->update([
-            'name' => $request->name
-        ]);
-
-        $role->permissions()->sync($request->permissions);
-
-        return $this->successResponse('Rol actualizado exitosamente', [
-            'role' => $role,
-        ]);
     }
 
     public function destroy($roleId)
     {
-        $role = Role::find($roleId);
+        try {
+            $role = Role::find($roleId);
 
-        if (!$role) {
-            return $this->errorResponse('Rol no encontrado', 404);
-        } elseif (auth()->user()->hasRole($role->name)) {
-            return $this->errorResponse('No puedes eliminar tu propio rol', 403);
-        } else {
-            $role->delete();
-            return $this->successResponse('Rol eliminado exitosamente');
+            if (!$role) {
+                return $this->errorResponse('Rol no encontrado', 404);
+            } else if (auth()->user()->hasRole($role->name)) {
+                return $this->errorResponse('No puedes eliminar tu propio rol', 403);
+            } else {
+                $role->delete();
+                return $this->successResponse('Rol eliminado exitosamente');
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el rol',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

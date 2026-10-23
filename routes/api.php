@@ -126,9 +126,8 @@ Route::prefix('v1')->group(function () {
         ->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
+            Route::patch('/editar/{gerenciaId}', 'update');
+            Route::delete('/{gerenciaId}/delete', 'destroy');
         });
 
         /*
@@ -144,9 +143,8 @@ Route::prefix('v1')->group(function () {
         ->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
+            Route::patch('/editar/{actividadId}', 'update');
+            Route::delete('/{actividadId}/delete', 'destroy');
         });
     });
 });
