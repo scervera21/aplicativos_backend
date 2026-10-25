@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
-            $table->string('aplicativo',80);
+            $table->string('nombre_aplicativo',80);
             $table->string('alias',8)->nullable();
-            $table->boolean('pap');
-            $table->string('estatus',20)->default('Sin Estatus');
-            $table->string('descripcion',100)->nullable();
-            $table->foreignId('responsable')->nullable()->constrained('security.users')->onUpdate('cascade')->onDelete('set null');
+            $table->boolean('pap')->default(false);
+            $table->string('estatus',30)->default('Sin Estatus');
+            $table->string('descripcion',200)->nullable();
+            $table->string('responsable',50)->nullable();
+            $table->string('lenguajes_frontend', 50)->nullable();
+            $table->string('lenguajes_backend', 50)->nullable();
+            $table->string('bases_datos', 50)->nullable();
+            $table->date('fecha_inicio')->nullable();
+            $table->date('fecha_fin')->nullable();
+            $table->text('observaciones')->nullable();
             $table->foreignId('gerencia_id')->nullable()->constrained('public.gerencias')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
@@ -29,9 +35,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropForeign(['responsable']);
         Schema::dropForeign(['gerencia_id']);
-        Schema::dropColumn('responsable');
         Schema::dropColumn('gerencia_id');
         Schema::dropIfExists('public.aplicativos');
     }
