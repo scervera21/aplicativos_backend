@@ -11,50 +11,105 @@ class PermissionController extends Controller
 
     public function index()
     {
-        $permissions = Permission::all();
-        return $this->successResponse('Permisos obtenidos exitosamente', $permissions);
+        try {
+            $permissions = Permission::all();
+            return response()->json([
+                'permissions' => $permissions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los permisos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:security.permissions',
-            'module' => 'required|string'
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|unique:security.permissions',
+                'category' => 'required|string',
+                'module' => 'required|string'
+            ]);
 
-        if ($validator->fails()) {
-            return $this->errorResponse('Error en la validación', 422, $validator->errors());
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Error en la validación',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $permission = Permission::create($request->all());
+            return response()->json([
+                'message' => 'Permiso creado exitosamente',
+                'permission' => $permission
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el permiso',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $permission = Permission::create($request->all());
-
-        return $this->successResponse('Permiso creado exitosamente', $permission);
     }
 
     public function update(Request $request, $permissionId)  // Se obtiene el id del permiso a actualizar
     {
-        $permission = Permission::findOrFail($permissionId);
+        try {
+            $permission = Permission::find($permissionId);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:security.permissions' . $permission,     // Ignora el id del permiso al verificar unicidad.
-            'module' => 'required|string'
-        ]);
+            if (!$permission) {
+                return response()->json([
+                    'message' => 'Permiso no encontrado'
+                ], 404);
+            }
 
-        if ($validator->fails()) {
-            return $this->errorResponse('Error en la validación', 422, $validator->errors());
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|unique:security.permissions,' . $permission->id,     // Ignora el id del permiso al verificar unicidad.
+                'category' => 'required|string',
+                'module' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Error en la validación',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $permission->update($request->all());
+            return response()->json([
+                'message' => 'Permiso actualizado exitosamente',
+                'permission' => $permission
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el permiso',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $permission->update($request->all());
-
-        return $this->successResponse('Permiso actualizado exitosamente', $permission);
     }
 
     public function destroy($permissionId)
     {
-        $permission = Permission::findOrFail($permissionId);
+        try {
+            $permission = Permission::find($permissionId);
 
-        $permission->delete();
-
-        return $this->successResponse('Permiso eliminado exitosamente');
+            if (!$permission) {
+                return response()->json([
+                    'message' => 'Permiso no encontrado'
+                ], 404);
+            } else {
+                $permission->delete();
+                return response()->json([
+                    'message' => 'Permiso eliminado exitosamente'
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el permiso',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

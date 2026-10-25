@@ -8,8 +8,12 @@ use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
 
-    /**
+    /*
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
@@ -20,14 +24,14 @@ class UserRequest extends FormRequest
         $id = $this->route('id') ?? null;
 
         return [
-            'username' => ['bail','required', 'string', 'max:20', Rule::unique('security.users', 'username')->ignore($id)],
-            'first_name' => ['bail','required_if:username','string'],
-            'last_name' => ['bail','required_if:first_name', 'string'],
-            'email' => ['bail','required', 'string', 'email', Rule::unique('security.users', 'email')->ignore($id)],
-            'password' => ['bail','required', Password::defaults(), 'max:25'],
-            'gerencia_id' => ['bail','required','exists:public.gerencias,id'],
-            'roles' => ['bail','required','array','min:1'],
-            'roles.*' => ['bail','exists:roles,id'],
+            'username' => ['required', 'string', 'max:20', Rule::unique('security.users', 'username')->ignore($id)],
+            'first_name' => ['required_if:username', 'string'],
+            'last_name' => ['required_if:first_name', 'string'],
+            'email' => ['required', 'string', 'email', Rule::unique('security.users', 'email')->ignore($id)],
+            'password' => [Password::defaults()],
+            'gerencia_id' => ['required', 'exists:public.gerencias,id'],
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['exists:security.roles'],
         ];
     }
 
@@ -53,7 +57,6 @@ class UserRequest extends FormRequest
             'gerencia_id.exists' => 'La gerencia no existe',
             'roles.required' => 'El rol es obligatorio',
             'roles.min' => 'Debe seleccionar al menos un rol',
-            'roles.array' => 'El rol debe ser un array',
             'roles.*.exists' => 'El rol no existe',
         ];
     }

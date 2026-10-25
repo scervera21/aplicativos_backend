@@ -7,6 +7,23 @@ use Illuminate\Validation\Rule;
 
 class AplicativoRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'pap' => (bool) $this->pap,
+        ]);
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -16,22 +33,18 @@ class AplicativoRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            // bail : Se detiene al producirse el primer fallo de validacion
-            
             'aplicativo' => [
-                'bail',
                 'required',
                 Rule::unique('aplicativos', 'aplicativo')->ignore($this->route('id')), // Se ignora el id del registro actual para que no se compare consigo mismo
                 'string',
                 'between:4,80'
             ],
-            'alias' => ['bail','nullable','string','between:2,8'],
-            'descripcion' => ['bail','nullable','string','max:100'],
-            'estatus' => ['bail', 'nullable', 'max:20'],
-            'pap' => ['bail', 'boolean'],
-            'responsable' => ['bail','nullable','exists:security.users,id'],
-            'gerencia_id' => ['bail','nullable','exists:public.gerencias,id'],
+            'alias' => ['nullable', 'string', 'between:2,8'],
+            'descripcion' => ['nullable', 'string', 'max:100'],
+            'estatus' => ['nullable', 'string', 'max:20'],
+            'pap' => ['boolean'],
+            'responsable' => ['nullable', 'exists:security.users,id'],
+            'gerencia_id' => ['nullable', 'exists:public.gerencias,id'],
         ];
     }
 

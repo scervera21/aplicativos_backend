@@ -15,11 +15,17 @@ class AplicativoController extends Controller
 
     public function index()
     {
-        $aplicativos = Aplicativo::all();
-        return response()->json([
-            "message" => 'Datos obtenidos exitosamente',
-            "data" => $aplicativos
-        ], 200);
+        try {
+            $aplicativos = Aplicativo::all();
+            return response()->json([
+                'aplicativos' => $aplicativos
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los aplicativos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -27,88 +33,74 @@ class AplicativoController extends Controller
      */
     public function store(AplicativoRequest $request)
     {
-
-        if(!auth()->user()->can('crear_aplicativos')) {
+        try {
+            $aplicativo = Aplicativo::create($request->validated());
             return response()->json([
-                "message" => 'No tiene permiso para realizar esta acción',
-            ], 403);
+                'message' => 'Aplicativo creado exitosamente',
+                'aplicativo' => $aplicativo
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el aplicativo',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user = auth()->user();
-        $validated = $request->validated();
-
-        $aplicativo = Aplicativo::create($validated);
-
-        return response()->json([
-            "message" => 'Aplicativo guardado exitosamente',
-            "data" => $aplicativo,
-            "user" => $user
-        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($aplicativoId)
     {
-        $aplicativo = Aplicativo::find($id);
-        if (!$aplicativo) {
+        try {
+            $aplicativo = Aplicativo::find($aplicativoId);
             return response()->json([
-                "message" => 'Aplicativo no encontrado',
-            ], 404);
+                'aplicativo' => $aplicativo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener el aplicativo',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json([
-            "message" => 'Aplicativo obtenido exitosamente',
-            "data" => $aplicativo
-        ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(AplicativoRequest $request, $id)
+    public function update(AplicativoRequest $request, $aplicativoId)
     {
-
-        if(!auth()->user()->can('editar_aplicativos')) {
+        try {
+            $aplicativo = Aplicativo::find($aplicativoId);
+            $aplicativo->update($request->validated());
             return response()->json([
-                "message" => 'No tiene permiso para realizar esta acción',
-            ], 403);
-        }
-
-        $aplicativo = Aplicativo::findOrFail($id);
-        
-        if (!$aplicativo) {
+                'message' => 'Aplicativo actualizado exitosamente',
+                'aplicativo' => $aplicativo
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
-                "message" => 'Aplicativo no encontrado',
-            ], 404);
+                'message' => 'Error al actualizar el aplicativo',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $aplicativo->update($request->validated());
-
-        return response()->json([
-            "message" => 'Aplicativo actualizado exitosamente',
-            "data" => $aplicativo
-        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($aplicativoId)
     {
-
-        if(!auth()->user()->can('eliminar_aplicativos')) {
+        try {
+            $aplicativo = Aplicativo::find($aplicativoId);
+            $aplicativo->delete();
             return response()->json([
-                "message" => 'No tiene permiso para realizar esta acción',
-            ], 403);
+                'message' => 'Aplicativo eliminado exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el aplicativo',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $aplicativo = Aplicativo::findOrFail($id);
-        $aplicativo->delete();
-
-        return response()->json([
-            "message" => 'Aplicativo eliminado exitosamente',
-        ], 200);
-
     }
 }

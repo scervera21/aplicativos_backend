@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AplicativoController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\ActividadController;
@@ -94,19 +93,6 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{roleId}/delete', 'destroy');
             });
 
-            // Permisos (/api/v1/admin/permisos/)
-            
-            Route::controller(PermissionController::class)->prefix('permisos')
-            ->missing(function () {
-                return response()->json(['message' => 'No encontrado'], 404);
-            })
-            ->group(function () {
-                Route::get('/', 'index');
-                Route::post('/registro', 'store');
-                Route::patch('/editar/{permissionId}', 'update');
-                Route::delete('/{permissionId}/delete', 'destroy'); 
-            });
-
         });
 
         /*
@@ -140,9 +126,8 @@ Route::prefix('v1')->group(function () {
         ->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
+            Route::patch('/editar/{gerenciaId}', 'update');
+            Route::delete('/{gerenciaId}/delete', 'destroy');
         });
 
         /*
@@ -158,9 +143,8 @@ Route::prefix('v1')->group(function () {
         ->group(function () {
             Route::get('/', 'index');
             Route::post('/registro', 'store');
-            Route::get('/{id}', 'show');
-            Route::patch('/editar/{id}', 'update');
-            Route::delete('/{id}', 'destroy');
+            Route::patch('/editar/{actividadId}', 'update');
+            Route::delete('/{actividadId}/delete', 'destroy');
         });
     });
 });

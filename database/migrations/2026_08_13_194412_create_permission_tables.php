@@ -27,6 +27,9 @@ return new class extends Migration
             $table->bigIncrements('id'); // permission id
             $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
             $table->string('guard'); // For MyISAM use string('guard', 25);
+            $table->enum('category', ['access', 'action']);
+            // 'access' = permiso para acceder a un módulo
+            // 'action' = permiso para realizar una acción
            
             $table->string('module')->nullable();   // Nombre del módulo al que pertenece el permiso
             $table->boolean('status')->default(true);   // Estado del permiso

@@ -15,15 +15,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny', User::class);
 
-        $users = User::with('roles')->get();
-        $roles = Role::all();
+        try {
+            $users = User::with('roles', 'gerencia')->get();
 
-        return $this->successResponse('Usuarios obtenidos exitosamente', [
-            'users' => $users,
-            'roles' => $roles
-        ]);
+            return response()->json([
+                'users' => $users,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los usuarios',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -31,24 +35,28 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $this->authorize('create', User::class);
+        try {
+            $user = User::create($request->validated());
 
-        $user = User::create($request->validated());
+            if ($request->roles) {
+                $user->syncRoles($request->roles);
+            }
 
-        // ASIGNAR ROLES
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
 
-        $roles = Role::whereIn('name', $request->roles)->pluck('id')->toArray();
-
-        if (!$roles) {
-            return $this->errorResponse('No se pudieron obtener los roles', 404);
+            return response()->json([
+                'message' => 'Usuario creado exitosamente',
+                'user' => $user->load('roles', 'gerencia'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user->syncRoles($roles);
-
-        return $this->successResponse('Usuario creado exitosamente', [
-            'user' => $user,
-            'roles' => $roles->pluck('name')
-        ]);
     }
 
     /**
@@ -56,30 +64,31 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $userId)
     {
-        $this->authorize('update', $userId);
+        try {
 
-        $user = User::find($userId);
+            $user = User::find($userId)->load('roles', 'gerencia');
 
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
+            $user->update($request->validated());
+
+            if ($request->roles) {
+                $user->syncRoles($request->roles);
+            }
+
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+
+            return response()->json([
+                'message' => 'Usuario actualizado exitosamente',
+                'user' => $user->load('roles', 'gerencia'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user->update($request->validated());
-
-        // ACTUALIZAR ROLES
-
-        $roles = Role::whereIn('name', $request->roles)->pluck('id')->toArray();
-
-        if (!$roles) {
-            return $this->errorResponse('No se pudieron obtener los roles', 404);
-        }
-        
-        $user->syncRoles($roles);
-
-        return $this->successResponse('Usuario actualizado exitosamente', [
-            'user' => $user,
-            'roles' => $roles->pluck('name')
-        ]);
     }
 
     /**
@@ -88,16 +97,18 @@ class UserController extends Controller
 
     public function destroy($userId)
     {
-        $this->authorize('delete', $userId);
+        try {
 
-        $user = User::find($userId);
-
-        if (!$user) {
-            return $this->errorResponse('Usuario no encontrado', 404);
+            $user = User::find($userId);
+            $user->delete();
+            return response()->json([
+                'message' => 'Usuario eliminado exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el usuario',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user->delete();
-
-        return $this->successResponse('Usuario eliminado exitosamente');
     }
 }
