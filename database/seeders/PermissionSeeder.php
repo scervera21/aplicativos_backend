@@ -12,14 +12,17 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // Limpia la caché de permisos
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Listado de módulos y sus permisos
         $modules = [
             'dashboard' => ['ver'],
-            'gerencias' => ['ver', 'crear', 'editar', 'eliminar'],
-            'usuarios' => ['ver', 'crear', 'editar', 'eliminar'],
-            'roles' => ['ver', 'crear', 'editar', 'eliminar'],
-            'aplicativos' => ['ver', 'crear', 'editar', 'eliminar','ver_detalles'],
-            'actividades' => ['ver', 'crear', 'editar', 'eliminar'],
+            'usuarios' => ['ver','gestionar'],
+            'roles' => ['ver','gestionar'],
+            'aplicativos' => ['ver','gestionar'],
+            'actividades' => ['ver','gestionar'],
         ];
 
         foreach ($modules as $module => $permissions) {     // $variable => $value
@@ -28,9 +31,7 @@ class PermissionSeeder extends Seeder
                 // Itera sobre los permisos ($permission => 'nombre del permiso')
                 Permission::firstOrCreate([
                     'name' => $permission . '.' . $module,
-                    'guard' => 'api',
-                    'category' => $permission === 'ver' ? 'access' : 'action',
-                    'module' => $module
+                    'guard_name' => 'api',
                 ]);
             }
         }

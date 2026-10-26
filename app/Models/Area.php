@@ -17,6 +17,6 @@ class Area extends Model
 
     public function actividades()
     {
-        return $this->hasMany(Actividad::class);    // Una area puede realizar muchas actividades
+        return $this->hasMany(Actividad::class);
     }
 }

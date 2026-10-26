@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             AplicativoSeeder::class,
-            DetalleAplicativoSeeder::class,
             ActividadSeeder::class,
         ]);
     }

@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Aplicativo;
 use App\Models\Gerencia;
-use App\Models\User;
 
 class AplicativoSeeder extends Seeder
 {
@@ -21,37 +20,38 @@ class AplicativoSeeder extends Seeder
             $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
-            $gerencia = Gerencia::first()->id;
-        }
-
-        if(!User::exists()) {
-            $this->command->error('No existen usuarios registrados, por favor ejecuta UserSeeder primero.');
-            return;
-        } else {
-            $users = User::all();
+            $gerencia = Gerencia::first();
         }
 
         $aplicativos = [
             [
-                'aplicativo'=> 'Sistema de Seguimiento de Aplicativos GGSI',
+                'nombre_aplicativo'=> 'Sistema de Seguimiento de Aplicativos GGSI',
                 'alias'=> null,
-                'responsable'=> $users->find(1),
                 'pap'=> false,
                 'descripcion'=> 'Monitoreo de avances de los proyectos de la GGSI',
-                'gerencia_id'=> $gerencia,
+                'gerencia_id'=> $gerencia->id,
+                'lenguajes_frontend' => 'VUE3',
+                'lenguajes_backend' => 'LARAVEL 9',
+                'bases_datos' => 'PostgreSQL 16',
+                'fecha_inicio' => '2025-01-01',
+                'fecha_fin' => '2025-11-01',
             ],
             [
-                'aplicativo'=> 'Sistema Integral Geolocalización e Incidencias GGSI',
-                'alias'=> null,
-                'responsable'=> $users->find(2),
-                'pap'=> false,
-                'descripcion'=> 'Centraliza y gestiona los reportes de incidencias entre las centrales CANTV',
-                'gerencia_id'=> $gerencia,
+                'nombre_aplicativo'=> 'Sistema Integral Geolocalización e Incidencias GGSI',
+                'alias'=> 'SIGI',
+                'pap'=> true,
+                'estatus'=> 'Implementado',
+                'responsable'=> 'Luis Sarmiento',
+                'gerencia_id'=> $gerencia->id,
+                'lenguajes_backend' => 'LARAVEL 9',
+                'bases_datos' => 'PostgreSQL/MongoDB',
+                'fecha_inicio' => '2019-06-01',
+                'fecha_fin' => '2026-08-01',
             ],       
         ];
         
         foreach ($aplicativos as $aplicativo) {
-            Aplicativo::create($aplicativo);
+            Aplicativo::firstOrCreate($aplicativo);
         }
     }
 }

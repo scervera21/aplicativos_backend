@@ -3,100 +3,132 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
+
     /**
-     * Inicia sesión autenticando al usuario y retornando un token JWT junto con su información y permisos.
-     * 
-     * MOTIVO DEL CAMBIO / AJUSTE:
-     * - Se utiliza 'with('roles.permissions')' (Eager Loading) para traer en una sola consulta
-     *   a la base de datos el usuario, sus roles asociados y los permisos de cada rol (Spatie ACL).
-     * - Se agregó la validación de 'status' para bloquear el acceso a usuarios inactivos o deshabilitados.
-     * - Se incluye la clave 'user' => $user en la respuesta JSON para que el frontend (Pinia Store)
-     *   pueda almacenar inmediatamente los datos del usuario autenticado sin requerir una segunda
-     *   petición HTTP, optimizando el rendimiento y permitiendo calcular permisos de inmediato.
+     * Iniciar sesión y obtener token JWT.
      */
-    public function login(Request $request)
-    {  
-        // Búsqueda del usuario cargando sus roles y permisos para el control de acceso en el frontend
-        $user = User::with('roles.permissions')->where('username', $request->username)->first();
+    
+    public function login(Request $request): JsonResponse
+    {
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'Usuario incorrecto',
-            ], 401);
-        } elseif (!$user->status) {
-            return response()->json([
-                'message' => 'El usuario se encuentra inactivo o inhabilitado',
-            ], 403);
-        } elseif (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Contraseña incorrecta',
-            ], 401);
-        } else {
-            // Generación del token JWT para la sesión del usuario autenticado con guard 'api'
-            $token = auth('api')->login($user);
+        // Valida las credenciales
+        $credentials = $request->validate([
+            'username' => 'required|string',
+            'password' => 'required',
+        ]);
 
-            // Respuesta completa esperada por el frontend (auth.ts -> loginSuccess)
+        // Intenta autenticar usando el guard API configurado en auth.php
+        if (! $token = auth('api')->attempt($credentials)) {
             return response()->json([
-                'message' => 'Login exitoso',
-                'token' => $token,
-                'expires_in' => auth('api')->factory()->getTTL() * 60, // Tiempo de expiración en segundos
-                'user' => $user, // Objeto de usuario completo con roles y permisos incluidos
-            ]);            
+                'status' => 'error',
+                'message' => 'Credenciales inválidas'
+            ], 401);
         }
+
+        $user = auth('api')->user();
+        
+        // Cierra sesión si está inactivo
+        if (!$user->is_active) {
+            auth('api')->logout();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El usuario se encuentra inactivo o inhabilitado'
+            ], 403);
+        }
+        
+        // Retorna el token y la información del usuario.
+        return $this->respondWithToken($token);
     }
 
     /**
      * Retorna la información del usuario autenticado actual.
-     * 
-     * MOTIVO DEL CAMBIO / AJUSTE:
-     * - Se agregó la carga de relaciones 'roles.permissions' para que el frontend pueda sincronizar
-     *   o verificar la identidad y permisos actualizados del usuario en cualquier momento.
      */
-    public function me()
+    public function me(): JsonResponse
     {
-        return response()->json(auth('api')->user()?->load('roles.permissions'));
+        $user = auth('api')->user();
+
+        if (! $user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Usuario no autenticado'
+            ], 401);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name')
+            ],
+        ]);
     }
 
     /**
      * Cierra la sesión invalidando el token JWT actual en el servidor.
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
-        auth('api')->logout();
-        return response()->json(['message' => 'Se ha cerrado la sesión correctamente']);
+
+        try {
+            auth('api')->logout();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sesión cerrada exitosamente'
+            ]);
+        } catch (\Exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se pudo cerrar la sesión, intente de nuevo'
+            ], 500);
+        }
     }
 
     /**
-     * Renueva el token JWT vencido o próximo a vencer (Silent Token Refresh).
-     * 
-     * MOTIVO DEL CAMBIO / AJUSTE:
-     * - Verifica si el usuario sigue con estatus activo ('status === true').
-     * - Retorna el nuevo 'token', su tiempo de vida 'expires_in' y el 'user' actualizado.
-     * - Permite que el interceptor de Axios en el frontend ('src/services/api.ts')
-     *   renueve la sesión de forma transparente cuando se detecta un error 401.
+     * Obtiene un nuevo token JWT renovado.
      */
-    public function refresh()   
+    public function refresh(): JsonResponse
+    {
+        try {
+            $newToken = auth('api')->refresh();
+            return $this->respondWithToken($newToken);
+        } catch (\Exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se pudo renovar el token, intente de nuevo'
+            ], 401);
+        }
+    }
+
+    /**
+     * Retorna una respuesta JSON con el token y la información del usuario.
+     *
+     * @param string $token El token JWT.
+     * @return JsonResponse La respuesta JSON.
+     */
+    protected function respondWithToken($token): JsonResponse
     {
         $user = auth('api')->user();
 
-        // Si el usuario fue desactivado mientras tenía una sesión abierta, rechazamos el refresco
-        if ($user && !$user->status) {
-            auth('api')->logout();
-            return response()->json([
-                'message' => 'La sesión ha sido finalizada.',
-            ], 401);
-        }
-
         return response()->json([
-            'token' => auth('api')->refresh(),
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => $user?->load('roles.permissions'),
+            'status' => 'success',
+            'data' => [
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'roles' => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name')
+                ] : null,
+            ],
         ]);
     }
 }

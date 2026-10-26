@@ -12,7 +12,7 @@ class Gerencia extends Model
     protected $table = 'public.gerencias';
 
     protected $fillable = [
-        'gerencia',
+        'nombre_gerencia',
         'sigla',
     ];
 
@@ -23,11 +23,11 @@ class Gerencia extends Model
 
     public function aplicativos()
     {
-        return $this->hasMany(Aplicativo::class); // Una gerencia posee muchos aplicativos
+        return $this->hasMany(Aplicativo::class, 'gerencia_id'); // Una gerencia posee muchos aplicativos
     }
 
-    public function actividades()
+    public function actividadesParticipadas()
     {
-        return $this->belongsToMany(Actividad::class); // Una gerencia puede colaborar en muchas actividades
+        return $this->belongsToMany(Actividad::class, 'colaboradores', 'gerencia_id', 'actividad_id'); // Una gerencia puede colaborar en muchas actividades
     }
 }

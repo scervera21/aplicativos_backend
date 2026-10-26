@@ -11,15 +11,11 @@ class Permission extends SpatiePermission
 
     protected $fillable = [
         'name',
-        'guard',
-        'category',    // 'access' | 'action'
-        'module',
+        'guard_name',
         'status'
     ];
 
-    protected $attributes = [
-        'guard' => 'api'
-    ];
+    protected $guard_name = 'api';
 
     public function roles() : BelongsToMany
     {

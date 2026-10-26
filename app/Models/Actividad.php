@@ -9,38 +9,53 @@ class Actividad extends Model
 {
     use HasFactory;
     
-    protected $table = 'public.actividades';  // Especifica el nombre de la tabla en la base de datos
+    protected $table = 'public.actividades';
 
     protected $fillable = [
-        'actividad',
-        'creado_el',
-        'culminado_el',
+        'nombre_actividad',
+        'fecha_creacion',
+        'fecha_culminacion',
         'area_id',
         'prioridad',
         'estado',
+        'porcentaje',
         'completado',
         'comentarios',
         'aplicativo_id',
     ];
 
     protected $casts = [
-        'creado_el' => 'date',
-        'culminado_el' => 'date',
         'completado' => 'boolean',
     ];
 
-    public function aplicativos()
+    public function aplicativo()
     {
         return $this->belongsTo(Aplicativo::class); // Una actividad pertenece a un aplicativo
     }
 
-    public function gerencias()
-    {
-        return $this->belongsToMany(Gerencia::class, 'colaboradores', 'actividad_id', 'gerencia_id'); // En el modelo actividades se define la relación muchos a muchos con gerencia a traves de la tabla intermedia 'colaboradores' con los campos actividad_id y gerencia_id
-    }
-
     public function area()
     {
-        return $this->belongsTo(Area::class); // una actividad pertenece a un area
+        return $this->belongsTo(Area::class); // Una actividad pertenece a un area
+    }
+
+    public function gerenciasColaboradoras()
+    {
+        return $this->belongsToMany(Gerencia::class, 'colaboradores', 'actividad_id', 'gerencia_id'); // Una actividad puede tener muchas gerencias colaboradoras
+    }
+
+    // Si llega a 100, completado pasa a true de forma automática
+    // Actualiza el estado a Culminado cuando el porcentaje llega a 100
+    // Actualiza la fecha de culminación cuando el porcentaje llega a 100
+
+    public function setPorcentajeAttribute($value) {
+        $this->attributes['porcentaje'] = $value;
+        if ($value == 100) {
+            $this->attributes['completado'] = true;
+            $this->attributes['estado'] = 'Culminado';
+            $this->attributes['fecha_culminacion'] = now()->format('Y-m-d');
+        } else {
+            $this->attributes['completado'] = false;
+            $this->attributes['fecha_culminacion'] = null;
+        }
     }
 }

@@ -10,9 +10,7 @@ class Role extends SpatieRole
 {
     protected $table = 'security.roles';    // Especifica el nombre y esquema de la tabla en la base de datos
 
-    protected $attributes = [
-        'guard' => 'api'
-    ];
+    protected $guard_name = 'api';
 
     public function users() : BelongsToMany
     {

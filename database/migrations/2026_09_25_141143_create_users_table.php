@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('last_name', 30);
             $table->string('email',100)->unique();
             $table->string('password');
-            $table->boolean('status')->default(true);   // Indica si el usuario está activo o inactivo
+            $table->boolean('is_active')->default(true);   // Indica si el usuario está activo o inactivo
             $table->unsignedSmallInteger('failed_login_attempts')->default(0); // Contador de intentos fallidos
             $table->timestamp('locked_until')->nullable(); // Bloquea la cuenta del usuario hasta que el usuario ingrese el token de recuperación
             $table->timestamps();
-            $table->foreignId('gerencia_id')->constrained('public.gerencias')->onDelete('set null');
+            $table->foreignId('gerencia_id')->nullable()->constrained('public.gerencias')->onDelete('set null');
         });
     }
 
@@ -33,8 +33,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropForeign(['gerencia_id']);
-        Schema::dropColumn('gerencia_id');
+        Schema::table('security.users', function (Blueprint $table) {
+            $table->dropForeign(['gerencia_id']);
+            $table->dropColumn('gerencia_id');
+        });
         Schema::dropIfExists('security.users');
     }
 };

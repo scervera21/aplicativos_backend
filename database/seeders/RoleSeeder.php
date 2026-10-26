@@ -27,17 +27,20 @@ class RoleSeeder extends Seeder
 
         $admin_role->syncPermissions(Permission::all());
         
-        // Rol Usuario
+        // Rol Colaborador
         
-        $regular_user_role = Role::firstOrCreate([
-            'name' => 'usuario',
+        $colaborador_role = Role::firstOrCreate([
+            'name' => 'colaborador',
             'guard_name' => 'api',
         ]);
 
-        $regular_user_role->syncPermissions([
-            'ver_dashboard',
-            'ver_usuarios',
-            'ver_gerencias',
-        ]);
+        $colaboradorPermissions = Permission::whereNotIn('name', [
+            'ver.usuarios', 
+            'gestionar.usuarios', 
+            'ver.roles', 
+            'gestionar.roles'
+        ])->get();
+
+        $colaborador_role->syncPermissions($colaboradorPermissions);
     }
 }

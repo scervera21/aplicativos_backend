@@ -15,7 +15,7 @@ class GerenciaSeeder extends Seeder
     {
         $gerencias = [
             [
-                'gerencia'=>'Gerencia Seguridad, Operacion y Servicios',
+                'nombre_gerencia'=>'Gerencia Seguridad, Operacion y Servicios',
                 'sigla'=>'GSOS',
             ],
         ];

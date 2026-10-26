@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Actividad;
 use App\Models\Aplicativo;
 use App\Models\Area;
+use App\Models\Gerencia;
 
 class ActividadSeeder extends Seeder
 {
@@ -27,36 +28,42 @@ class ActividadSeeder extends Seeder
         }
 
 
-        $sysaplicativos = Aplicativo::where('aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first()->id;
-        $geolocalizacion = Aplicativo::where('aplicativo', 'Sistema Integral Geolocalización e Incidencias GGSI')->first()->id;
-        $areadesarrollo = Area::where('nombre_area', 'Desarrollo')->first()->id;
-        $areabd = Area::where('nombre_area', 'Base de Datos')->first()->id;
+        $aplicativo = Aplicativo::where('nombre_aplicativo', 'Sistema de Seguimiento de Aplicativos GGSI')->first();
+        $areaLevantamiento = Area::where('nombre_area', 'LEVANTAMIENTO DE INFORMACION')->first();
+        $areaDesarrollo = Area::where('nombre_area', 'DESARROLLO')->first();
+        $gerenciaColab = Gerencia::skip(1)->first() ?? Gerencia::first();
 
-        if (!($sysaplicativos && $geolocalizacion && $areadesarrollo && $areabd)) {
-            $this->command->error('Aplicativo no encontrado, revisa que AplicativoSeeder se haya ejecutado correctamente.');
-            return;
+        if ($aplicativo && $areaLevantamiento) {
+            $actividad1 = Actividad::firstOrCreate([
+                'nombre_actividad' => 'Levantamiento inicial de requerimientos',
+                'aplicativo_id' => $aplicativo->id,
+                'area_id' => $areaLevantamiento->id,
+                'prioridad' => 'BAJA',
+                'porcentaje' => 90,
+                'fecha_creacion' => '2026-02-18',
+                'fecha_culminacion' => '2026-03-18',
+                'estado' => 'ATRASADO',
+                'comentarios' => 'Requerimientos aprobados'
+            ]);
+
+            // Asignar gerencia colaboradora
+            if ($gerenciaColab) {
+                $actividad1->gerenciasColaboradoras()->sync([$gerenciaColab->id]);
+            }
         }
 
-        $actividades = [
-            [
-                'actividad' => 'Mapeo de base de datos y carga de datos',
-                'prioridad' => 'Alta',
-                'completado' => false,
-                'aplicativo_id' => $sysaplicativos,
-                'area_id' => $areabd,
-            ],
-            [
-                'actividad' => 'Rediseño de menu dinamico de reportes de incidencias',
-                'prioridad'=> 'Alta',
-                'estado' => 'Finalizado',
-                'completado' => true,
-                'aplicativo_id'=> $geolocalizacion,
-                'area_id' => $areadesarrollo,
-            ],
-        ];
-
-        foreach ($actividades as $actividad) {
-            Actividad::firstOrCreate($actividad);
+        if ($aplicativo && $areaDesarrollo) {
+            Actividad::firstOrCreate([
+                'nombre_actividad' => 'Desarrollo de módulos',
+                'aplicativo_id' => $aplicativo->id,
+                'area_id' => $areaDesarrollo->id,
+                'prioridad' => 'ALTA',
+                'porcentaje' => 60,
+                'fecha_creacion' => '2026-02-23',
+                'fecha_culminacion' => null,
+                'estado' => 'PENDIENTE',
+                'comentarios' => 'En proceso de codificación'
+            ]);
         }
     }
 }

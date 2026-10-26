@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('public.aplicativos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_aplicativo',80);
+            $table->string('nombre_aplicativo',80)->unique();
             $table->string('alias',8)->nullable();
             $table->boolean('pap')->default(false);
             $table->string('estatus',30)->default('Sin Estatus');
@@ -35,8 +35,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropForeign(['gerencia_id']);
-        Schema::dropColumn('gerencia_id');
+        Schema::table('public.aplicativos', function (Blueprint $table) {
+            $table->dropForeign(['gerencia_id']);
+            $table->dropColumn('gerencia_id');
+        });
         Schema::dropIfExists('public.aplicativos');
     }
 };

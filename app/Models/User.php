@@ -8,11 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Relations\HasMany;     // Para que el usuario autenticado pueda tener muchas relaciones con la tabla aplicativos
-
-// Un modelo es como un objeto que representa una tabla de la base de datos. 
-// En este caso, el modelo User representa la tabla users de la base de datos.
-// Tiene las mismas columnas que la tabla users de la base de datos.
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -26,17 +21,15 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $fillable = [         // Las columnas que se pueden llenar masivamente
+    protected $fillable = [
         'username',
         'email',
         'password',
         'first_name',
         'last_name',
-        'status',
+        'is_active',
         'failed_login_attempts',
         'locked_until',
-        'created_at',
-        'updated_at',
         'gerencia_id',
     ];
 
@@ -45,7 +38,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $hidden = [           // Las columnas que no se pueden mostrar al usuario
+    protected $hidden = [          
         'password',
         'failed_login_attempts',
         'locked_until',
@@ -58,8 +51,8 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<string, string>
      */
-    protected $casts = [                            // Casteo de datos de las columnas
-        'status' => 'boolean',
+    protected $casts = [
+        'is_active' => 'boolean',
         'locked_until' => 'datetime',
         'password' => 'hashed',
     ];
@@ -118,11 +111,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function gerencia()
     {
-        return $this->belongsTo(Gerencia::class);   // Un usuario pertenece a una gerencia
+        return $this->belongsTo(Gerencia::class);
     }
 
-    public function aplicativos()
-    {
-        return $this->hasMany(Aplicativo::class, 'responsable'); // Un usuario es responsable de muchos aplicativos
-    }
 }

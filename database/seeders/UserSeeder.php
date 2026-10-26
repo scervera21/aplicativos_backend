@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Gerencia;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -20,44 +19,44 @@ class UserSeeder extends Seeder
             $this->command->error('No existen gerencias registradas, por favor ejecuta GerenciaSeeder primero.');
             return;
         } else {
-            $gerencia = Gerencia::first()->id;
+            // Obtenemos una gerencia por defecto para asociar los usuarios
+            $gerenciaDefault = Gerencia::first();
         }
 
         if(!Role::exists()) {
             $this->command->error('No existen roles registrados, por favor ejecuta RoleSeeder primero.');
             return;
         } else {
-            $admin_role = Role::where('name', 'administrador')->get();
-            $user_role = Role::where('name', 'usuario')->get();
+            $admin_role = Role::where('name', 'administrador')->first();
+            $colaborador_role = Role::where('name', 'colaborador')->first();
         }
 
         $admin = User::firstOrCreate(
-            ['username' => 'admin'],
-
+            ['username' => 'Admin User'],
             [
                 'username' => 'admin',
                 'first_name' => 'admin',
                 'last_name' => 'admin',
                 'email' => 'admin@cantv.com',
-                'password' => Hash::make('admin123'),
-                'gerencia_id' => $gerencia,
+                'password' => bcrypt('password'),
+                'gerencia_id' => $gerenciaDefault->id,
             ]
         );
 
         $admin->assignRole($admin_role);
 
         $user = User::firstOrCreate(
-            ['username' => 'test_user'],
-
+            ['username' => 'Colaborador User'],
             [
-                'username' => 'test_user',
-                'first_name' => 'test_user',
-                'last_name' => 'test_user',
-                'email' => 'test_user@cantv.com',
-                'password' => Hash::make('testuser'),
-                'gerencia_id' => $gerencia,
+                'username' => 'colaborador',
+                'first_name' => 'colaborador',
+                'last_name' => 'colaborador',
+                'email' => 'colaborador@cantv.com',
+                'password' => bcrypt('password'),
+                'gerencia_id' => $gerenciaDefault->id,
             ]
         );
-        $user->assignRole($user_role);
+
+        $user->assignRole($colaborador_role);
     }
 }

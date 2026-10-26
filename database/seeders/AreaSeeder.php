@@ -13,9 +13,15 @@ class AreaSeeder extends Seeder
      */
     public function run(): void
     {
-        Area::create(['nombre_area' => 'Desarrollo de Software']);
-        Area::create(['nombre_area' => 'Infraestructura']);
-        Area::create(['nombre_area' => 'Bases de Datos']);
-        Area::create(['nombre_area' => 'Levantamiento de Informacion']);
+        $areas = [
+            ['nombre_area' => 'LEVANTAMIENTO DE INFORMACION'],
+            ['nombre_area' => 'BASE DE DATOS'],
+            ['nombre_area' => 'DESARROLLO'],
+            ['nombre_area' => 'INFRAESTRUCTURA'],
+        ];
+
+        foreach ($areas as $area) {
+            Area::firstOrCreate($area);
+        }
     }
 }
