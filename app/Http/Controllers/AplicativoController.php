@@ -8,6 +8,13 @@ use App\Http\Requests\AplicativoRequest;
 
 class AplicativoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('permission:ver.aplicativos')->only(['index', 'show']);
+        $this->middleware('permission:gestionar.aplicativos')->only(['store', 'update', 'destroy']);
+    }
+    
     /**
      * Display a listing of the resource.
      * @phpstan-ignore-next-line
@@ -15,38 +22,110 @@ class AplicativoController extends Controller
 
     public function index()
     {
+        $aplicativos = Aplicativo::with(['gerencia'])->get();
 
+        $data = $aplicativos->map(function ($app) {
+            return [
+                'id' => $app->id,
+                'nombre_aplicativo' => $app->nombre_aplicativo,
+                'alias' => $app->alias,
+                'pap' => $app->pap,
+                'estatus' => $app->estatus,
+                'responsable' => $app->responsable,
+                'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
+                'lenguajes_frontend' => $app->lenguajes_frontend,
+                'lenguajes_backend' => $app->lenguajes_backend,
+                'bases_datos' => $app->bases_datos,
+                'avance_total' => $app->avance_total,   // Cálculo dinámico
+                'observaciones' => $app->observaciones,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(AplicativoRequest $request)
     {
+        $aplicativo = Aplicativo::create($request->validated());
 
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Aplicativo creado exitosamente',
+            'data' => $aplicativo
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show($aplicativoID)
     {
+        $aplicativo = Aplicativo::with(['gerencia'])->find($aplicativoID);
 
+        if (!$aplicativo) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Aplicativo no encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'aplicativo' => $aplicativo,
+                'avance_total' => $aplicativo->avance_total
+            ]
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(AplicativoRequest $request, $aplicativoID)
     {
+        $aplicativo = Aplicativo::find($aplicativoID);
 
+        if (!$aplicativo) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Aplicativo no encontrado'
+            ], 404);
+        }
+
+        $aplicativo->update($request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Aplicativo actualizado exitosamente',
+            'data' => $aplicativo
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy()
+    public function destroy($aplicativoID)
     {
+        $aplicativo = Aplicativo::find($aplicativoID);
 
+        if (!$aplicativo) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Aplicativo no encontrado'
+            ], 404);
+        }
+
+        $aplicativo->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Aplicativo eliminado exitosamente'
+        ]);
     }
 }
