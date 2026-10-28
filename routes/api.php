@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\AplicativoController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\ActividadController;
@@ -58,46 +58,30 @@ Route::prefix('v1')->group(function () {
             // POST /api/v1/auth/refresh: Utilizado por el interceptor de Axios para refresco silencioso
             Route::post('/refresh', [AuthController::class, 'refresh']);
         });
-        
+
         /*
         |----------------------------------------------------------------------
-        | Proteccion de rutas usuarios, roles y permisos por middleware para usuario administrador
+        | Gestión de Roles y Permisos (/api/v1/roles)
         |----------------------------------------------------------------------
         */
+        
+        // Catálogo general de permisos
+        Route::get('/permisos', [RolePermissionController::class, 'listaPermisos'])
+            ->middleware('permission:ver.roles');
 
-        Route::group(['middleware' => 'role:administrador', 'prefix' => 'admin'], function () {
-
-            // Usuarios (/api/v1/admin/users/)
-
-            Route::controller(UserController::class)->prefix('users')
-            ->missing(function () {
-                return response()->json(['message' => 'No encontrado'], 404);
-            })
-            ->group(function () {
-                Route::get('/', 'index');
-                Route::post('/registro', 'store');
-                Route::patch('/editar/{userId}', 'update');
-                Route::delete('/{userId}/delete', 'destroy');
-            });
-
-            // Roles (/api/v1/admin/roles/)
-            
-            Route::controller(RoleController::class)->prefix('roles')
-            ->missing(function () {
-                return response()->json(['message' => 'No encontrado'], 404);
-            })
-            ->group(function () {
-                Route::get('/', 'index');
-                Route::post('/registro', 'store');
-                Route::patch('/editar/{roleId}', 'update');
-                Route::delete('/{roleId}/delete', 'destroy');
-            });
-
-        });
+        Route::apiResource('roles', RolePermissionController::class);
 
         /*
         |----------------------------------------------------------------------
-        | Módulo: Aplicativos (/api/v1/aplicativos)
+        | Gestión de Usuarios (/api/v1/usuarios)
+        |----------------------------------------------------------------------
+        */
+        
+        Route::apiResource('usuarios', UserController::class);
+
+        /*
+        |----------------------------------------------------------------------
+        | Gestión de Aplicativos (/api/v1/aplicativos)
         |----------------------------------------------------------------------
         */
 
@@ -115,20 +99,11 @@ Route::prefix('v1')->group(function () {
 
         /*
         |----------------------------------------------------------------------
-        | Módulo: Gerencias (/api/v1/gerencias)
+        | Gestion de Gerencias (/api/v1/gerencias)
         |----------------------------------------------------------------------
         */
 
-        Route::controller(GerenciaController::class)->prefix('gerencias')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::patch('/editar/{gerenciaId}', 'update');
-            Route::delete('/{gerenciaId}/delete', 'destroy');
-        });
+        Route::apiResource('gerencias', GerenciaController::class);
 
         /*
         |----------------------------------------------------------------------
@@ -136,15 +111,6 @@ Route::prefix('v1')->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::controller(ActividadController::class)->prefix('actividades')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::patch('/editar/{actividadId}', 'update');
-            Route::delete('/{actividadId}/delete', 'destroy');
-        });
+        Route::apiResource('actividades', ActividadController::class);
     });
 });

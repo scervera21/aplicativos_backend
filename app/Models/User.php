@@ -30,6 +30,8 @@ class User extends Authenticatable implements JWTSubject
         'is_active',
         'failed_login_attempts',
         'locked_until',
+        'created_at',
+        'updated_at',
         'gerencia_id',
     ];
 
@@ -91,23 +93,23 @@ class User extends Authenticatable implements JWTSubject
         return $this->locked_until && $this->locked_until->isFuture();
     }
 
-    // Bloqueo de usuario por intentos fallidos
-    protected function lock()
+    protected function incrementFailedLoginAttemps()
     {
-        $this->failed_login_attempts++;
-        if ($this->failed_login_attempts >= 3) {
-            $this->update(['locked_until' => now()->addMinutes(5)]);
-            $this->update(['status' => false]); 
+       $this->increment('failed_login_attempts');
+
+       // Lock account after N failed attempts
+        if ($this->failed_login_attempts >= env('APP_LOGIN_ATTEMPTS')) {
+            $this->update(['locked_until' => now()->addMinutes(env('APP_LOGIN_ATTEMPTS_LOCKOUT_MINUTES'))]);
+            $this->update(['is_active' => false]);
         }
     }
 
-    // Desbloqueo de usuario
-    protected function unlock()
+    protected function resetFailedLoginAttemps()
     {
         $this->update(['failed_login_attempts' => 0]);
         $this->update(['locked_until' => null]);
-        $this->update(['status' => true]);
     }
+
 
     public function gerencia()
     {
