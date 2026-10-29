@@ -29,12 +29,14 @@ class ActividadController extends Controller
     public function store(ActividadRequest $request)
     {
         $validated = $request->validated();
-        
+
+        // Extraer gerencias colaboradoras si vienen en el request
         $gerenciasColaboradoras = $validated['gerencias_colaboradoras'] ?? [];
         unset($validated['gerencias_colaboradoras']);
 
         $actividad = Actividad::create($validated);
 
+        // Sincronizar tabla pivote de colaboradores
         if (!empty($gerenciasColaboradoras)) {
             $actividad->gerenciasColaboradoras()->sync($gerenciasColaboradoras);
         }
@@ -43,7 +45,7 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad creada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
+            //'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
         ], 201);
     }
 
@@ -90,7 +92,7 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad actualizada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
+            //'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
         ]);
     }
 
@@ -105,13 +107,13 @@ class ActividadController extends Controller
             ], 404);
         }
 
-        $aplicativo = $actividad->aplicativo;
+        //$aplicativo = $actividad->aplicativo;
         $actividad->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Actividad eliminada exitosamente',
-            'nuevo_avance_aplicativo' => $aplicativo->avance_total
+            //'nuevo_avance_aplicativo' => $aplicativo->avance_total
         ]);
     }
 }

@@ -61,49 +61,53 @@ Route::prefix('v1')->group(function () {
 
         /*
         |----------------------------------------------------------------------
-        | Gestión de Roles y Permisos (/api/v1/roles)
+        | Módulo: Roles y Permisos (/api/v1/roles)
         |----------------------------------------------------------------------
         */
         
-        // Catálogo general de permisos
-        Route::get('/permisos', [RolePermissionController::class, 'listaPermisos'])
+        Route::get('/roles', [RolePermissionController::class, 'index'])
             ->middleware('permission:ver.roles');
-
-        Route::apiResource('roles', RolePermissionController::class);
-
-        /*
-        |----------------------------------------------------------------------
-        | Gestión de Usuarios (/api/v1/usuarios)
-        |----------------------------------------------------------------------
-        */
         
-        Route::apiResource('usuarios', UserController::class);
+        Route::post('/roles/create-rol', [RolePermissionController::class, 'store'])
+            ->middleware('permission:gestionar.roles');
+        
+        Route::get('/roles/{roleID}/permisos', [RolePermissionController::class, 'show'])
+            ->middleware('permission:ver.roles');
+        
+        Route::match(['put', 'patch'], '/roles/{roleID}/update', [RolePermissionController::class, 'update'])
+            ->middleware('permission:gestionar.roles');
+        
+        Route::delete('/roles/{roleID}', [RolePermissionController::class, 'destroy'])
+            ->middleware('permission:gestionar.roles');
 
         /*
         |----------------------------------------------------------------------
-        | Gestión de Aplicativos (/api/v1/aplicativos)
+        | Módulo: Usuarios (/api/v1/usuarios)
         |----------------------------------------------------------------------
         */
 
-        Route::controller(AplicativoController::class)->prefix('aplicativos')
-        ->missing(function () {
-            return response()->json(['message' => 'No encontrado'], 404);
-        })
-        ->group(function () {
-            Route::get('/', 'index');
-            Route::post('/registro', 'store');
-            Route::get('/{aplicativoId}/detalles', 'show'); // para ver detalles de un aplicativo
-            Route::patch('/editar/{aplicativoId}', 'update');
-            Route::delete('/{aplicativoId}/delete', 'destroy');
-        });
+        Route::get('/usuarios', [UserController::class, 'index'])
+            ->middleware('permission:ver.usuarios');
+        
+        Route::post('/usuarios/create-user', [UserController::class, 'store'])
+            ->middleware('permission:gestionar.usuarios');
+        
+        Route::match(['put', 'patch'], '/usuarios/{userID}/update', [UserController::class, 'update'])
+            ->middleware('permission:gestionar.usuarios');
+        
+        Route::delete('/usuarios/{userID}', [UserController::class, 'destroy'])
+            ->middleware('permission:gestionar.usuarios');
 
         /*
         |----------------------------------------------------------------------
-        | Gestion de Gerencias (/api/v1/gerencias)
+        | Módulo: Gerencias (/api/v1/gerencias)
         |----------------------------------------------------------------------
         */
 
-        Route::apiResource('gerencias', GerenciaController::class);
+        Route::get('/gerencias', [GerenciaController::class, 'index']);        
+        Route::post('/gerencias/create-gerencia', [GerenciaController::class, 'store']);        
+        Route::match(['put', 'patch'], '/gerencias/{gerenciaID}/update', [GerenciaController::class, 'update']);        
+        Route::delete('/gerencias/{gerenciaID}', [GerenciaController::class, 'destroy']);
 
         /*
         |----------------------------------------------------------------------
@@ -111,6 +115,37 @@ Route::prefix('v1')->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::apiResource('actividades', ActividadController::class);
+        Route::get('/actividades', [ActividadController::class, 'index'])
+            ->middleware('permission:ver.actividades');
+        
+        Route::post('/actividades/create-actividad', [ActividadController::class, 'store'])
+            ->middleware('permission:gestionar.actividades');
+        
+        Route::match(['put', 'patch'], '/actividades/{actividadID}/update', [ActividadController::class, 'update'])
+            ->middleware('permission:gestionar.actividades');
+        
+        Route::delete('/actividades/{actividadID}', [ActividadController::class, 'destroy'])
+            ->middleware('permission:gestionar.actividades');
+
+        /*
+        |----------------------------------------------------------------------
+        | Módulo: Aplicativos (/api/v1/aplicativos)
+        |----------------------------------------------------------------------
+        */
+
+        Route::get('/aplicativos', [AplicativoController::class, 'index'])
+            ->middleware('permission:ver.aplicativos');
+        
+        Route::post('/aplicativos/create-aplicativo', [AplicativoController::class, 'store'])
+            ->middleware('permission:gestionar.aplicativos');
+
+        Route::get('/aplicativos/{aplicativoID}/detalles', [AplicativoController::class, 'show'])
+            ->middleware('permission:ver.aplicativos');
+        
+        Route::match(['put', 'patch'], '/aplicativos/{aplicativoID}/update', [AplicativoController::class, 'update'])
+            ->middleware('permission:gestionar.aplicativos');
+        
+        Route::delete('/aplicativos/{aplicativoID}', [AplicativoController::class, 'destroy'])
+            ->middleware('permission:gestionar.aplicativos');
     });
 });

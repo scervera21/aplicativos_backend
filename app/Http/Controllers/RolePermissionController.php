@@ -24,8 +24,7 @@ class RolePermissionController extends Controller
      */
     public function index()
     {
-
-        $roles = Role::with('permissions')->get();
+        $roles = Role::all();
 
         return response()->json([
             'status' => 'success',
@@ -34,11 +33,11 @@ class RolePermissionController extends Controller
     }
 
     /**
-     * Listar el catálogo general de permisos (Útil para marcar casillas en la interfaz). (GET /api/permisos)
+     * Listar el catálogo general de permisos (Útil para marcar casillas en la interfaz). (GET /api/roles/permisos)
      */
-    public function listaPermisos()
+    public function listaPermisos() 
     {
-        $permisos = Permission::all();
+        $permisos = Permission::orderBy('id', 'desc')->get();
 
         return response()->json([
             'status' => 'success',
@@ -58,7 +57,7 @@ class RolePermissionController extends Controller
         ]);
 
         $role = Role::create([
-            'name' => $validatedData['name'],
+            'name' => strtoupper($validatedData['name']),
             'guard_name' => 'api'
         ]);
 
@@ -79,9 +78,10 @@ class RolePermissionController extends Controller
      */
     public function show($roleID)
     {
-        $role = Role::with('permissions')->find($roleID);
+        // Buscar el rol especificado y extraer solo el nombre de los permisos que tiene
+        $permissionsOfRole = Role::find($roleID)->permissions->pluck('name');
 
-        if (!$role) {
+        if (!$permissionsOfRole) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Rol no encontrado'
@@ -90,7 +90,7 @@ class RolePermissionController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $role
+            'data' => $permissionsOfRole
         ]);
     }
 
@@ -116,7 +116,7 @@ class RolePermissionController extends Controller
 
         // Actualizar nombre si viene en la petición
         if (isset($validatedData['name'])) {
-            $role->update(['name' => $validatedData['name']]);
+            $role->update(['name' => strtoupper($validatedData['name'])]);
         }
 
         // Sincronizar permisos si se enviaron
@@ -145,10 +145,10 @@ class RolePermissionController extends Controller
             ], 404);
         }
 
-        if ($role->name === 'Administrador') {
+        if ($role->permissions()->get()->pluck('name')->toArray() == Permission::all()->pluck('name')->toArray()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No se puede eliminar el rol protegido del sistema.'
+                'message' => 'No se puede eliminar el rol con permisos de administrador'
             ], 403);
         }
 

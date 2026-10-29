@@ -36,22 +36,21 @@ class UserController extends Controller
         $validatedData = $request->validated();
 
         $user = User::create([
-            'nombre_user' => $validatedData['nombre_user'],
-            'primer_nombre'  => $validatedData['primer_nombre'],
-            'apellido'       => $validatedData['apellido'],
+            'username' => $validatedData['username'],
+            'first_name'  => $validatedData['first_name'],
+            'last_name'       => $validatedData['last_name'],
             'email'          => $validatedData['email'],
             'password'       => bcrypt($validatedData['password']),
-            'activo'         => $validatedData['activo'] ?? true,
+            'is_active'         => $validatedData['is_active'] ?? true,
             'gerencia_id'    => $validatedData['gerencia_id'],
         ]);
 
-        // Asignar rol a usuario
-        $rol = $validatedData['rol'] ?? 'Colaborador';
-        $user->assignRole($rol);
+        $roles = $validatedData['roles'] ?? ['colaborador'];
+        $user->syncRoles($roles);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'User registrado exitosamente',
+            'message' => 'Usuario registrado exitosamente',
             'data' => $user->load(['gerencia', 'roles'])
         ], 201);
     }
@@ -66,7 +65,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'User no encontrado'
+                'message' => 'Usuario no encontrado'
             ], 404);
         }
 
@@ -78,13 +77,13 @@ class UserController extends Controller
 
         $user->update($validatedData);
 
-        if ($request->has('rol')) {
-            $user->syncRoles([$request->rol]);
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'User$user actualizado exitosamente',
+            'message' => 'Usuario actualizado exitosamente',
             'data' => $user->load(['gerencia', 'roles'])
         ]);
     }
@@ -100,7 +99,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'User$user no encontrado'
+                'message' => 'Usuario no encontrado'
             ], 404);
         }
 

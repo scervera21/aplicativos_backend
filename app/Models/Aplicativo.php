@@ -37,7 +37,7 @@ class Aplicativo extends Model
         return $this->hasMany(Actividad::class);            // Un aplicativo tiene muchas actividades
     }
 
-    // MÉTODO PARA CALCULAR EL PORCENTAJE GENERAL DEL APLICATIVO
+    // MÉTODO PARA CALCULAR EL PORCENTAJE DE AVANCE DEL APLICATIVO
 
     public function AvanceTotalAplicativo()
     {
@@ -46,7 +46,7 @@ class Aplicativo extends Model
 
         $sumaPorcentaje = $this->actividades()->sum('porcentaje');
         $avanceAplicativo = round(($sumaPorcentaje / $totalActividades), 2);
-        return (int) $avanceAplicativo; //Retorna el porcentaje general del aplicativo en entero
+        return (int) $avanceAplicativo;
     }
 
     // MÉTODO PARA CALCULAR EL PORCENTAJE PENDIENTE DEL APLICATIVO

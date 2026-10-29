@@ -25,10 +25,9 @@ class AppServiceProvider extends ServiceProvider
         // Definiendo la regla por defecto para contraseñas
 
         Password::defaults(function () {
-            $passwordRule = Password::min(6)
-                ->letters()
-                ->numbers()
-                ->symbols()
+            $passwordRule = Password::min(6) //longitud minima 6 caracteres
+                ->letters()  //debe tener al menos una letra
+                ->numbers()  //debe tener al menos un numero
                 ->uncompromised(); // Comprueba si la contraseña ha sido comprometida en brechas de seguridad conocidas
 
             return $passwordRule;

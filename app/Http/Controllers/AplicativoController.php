@@ -22,22 +22,19 @@ class AplicativoController extends Controller
 
     public function index()
     {
-        $aplicativos = Aplicativo::with(['gerencia'])->get();
+        // Cargamos la relación de gerencia y actividades
+        $aplicativos = Aplicativo::with(['gerencia', 'actividades'])->get();
 
+        // Informacion principal de los aplicativos
         $data = $aplicativos->map(function ($app) {
             return [
                 'id' => $app->id,
                 'nombre_aplicativo' => $app->nombre_aplicativo,
                 'alias' => $app->alias,
-                'pap' => $app->pap,
-                'estatus' => $app->estatus,
+                'descripcion' => $app->descripcion,
                 'responsable' => $app->responsable,
                 'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
-                'lenguajes_frontend' => $app->lenguajes_frontend,
-                'lenguajes_backend' => $app->lenguajes_backend,
-                'bases_datos' => $app->bases_datos,
-                'avance_total' => $app->avance_total,   // Cálculo dinámico
-                'observaciones' => $app->observaciones,
+                'avance_total' => $app->AvanceTotalAplicativo(), // Cálculo del avance total del aplicativo
             ];
         });
 
@@ -66,7 +63,7 @@ class AplicativoController extends Controller
      */
     public function show($aplicativoID)
     {
-        $aplicativo = Aplicativo::with(['gerencia'])->find($aplicativoID);
+        $aplicativo = Aplicativo::find($aplicativoID);
 
         if (!$aplicativo) {
             return response()->json([
@@ -75,11 +72,25 @@ class AplicativoController extends Controller
             ], 404);
         }
 
+        // Informacion detallada del aplicativo
+        $detalles = $aplicativo->map(function ($app) {
+            return [
+                'fecha_inicio' => $app->fecha_inicio,
+                'fecha_fin' => $app->fecha_fin,
+                'pap' => $app->pap,
+                'estatus' => $app->estatus,
+                'responsable' => $app->responsable,
+                'lenguajes_frontend' => $app->lenguajes_frontend,
+                'lenguajes_backend' => $app->lenguajes_backend,
+                'bases_datos' => $app->bases_datos,
+                'observaciones' => $app->observaciones,
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
             'data' => [
-                'aplicativo' => $aplicativo,
-                'avance_total' => $aplicativo->avance_total
+                'detalle_aplicativo' => $detalles,
             ]
         ]);
     }
