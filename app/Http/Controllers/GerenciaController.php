@@ -7,12 +7,6 @@ use App\Models\Gerencia;
 
 class GerenciaController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-        $this->middleware('permission:ver.gerencias')->only(['index']);
-        $this->middleware('permission:gestionar.gerencias')->only(['store', 'update', 'destroy']);
-    }
 
     public function index()
     {

@@ -37,11 +37,11 @@ class RolePermissionController extends Controller
      */
     public function listaPermisos() 
     {
-        $permisos = Permission::orderBy('id', 'desc')->get();
+        $permissions = Permission::orderBy('id', 'desc')->get();
 
         return response()->json([
             'status' => 'success',
-            'data' => $permisos
+            'data' => $permissions
         ]);
     }
 

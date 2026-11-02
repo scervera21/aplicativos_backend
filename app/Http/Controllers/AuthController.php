@@ -63,6 +63,9 @@ class AuthController extends Controller
             'data' => [
                 'id' => $user->id,
                 'username' => $user->username,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
                 'roles' => $user->getRoleNames(),
                 'permissions' => $user->getAllPermissions()->pluck('name')
             ],
@@ -125,6 +128,9 @@ class AuthController extends Controller
                 'user' => $user ? [
                     'id' => $user->id,
                     'username' => $user->username,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
                     'roles' => $user->getRoleNames(),
                     'permissions' => $user->getAllPermissions()->pluck('name')
                 ] : null,

@@ -31,10 +31,11 @@ class AplicativoController extends Controller
                 'id' => $app->id,
                 'nombre_aplicativo' => $app->nombre_aplicativo,
                 'alias' => $app->alias,
-                'descripcion' => $app->descripcion,
+                'fecha_inicio' => $app->fecha_inicio,
+                'fecha_fin' => $app->fecha_fin,
                 'responsable' => $app->responsable,
                 'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
-                'avance_total' => $app->AvanceTotalAplicativo(), // Cálculo del avance total del aplicativo
+                'avance_total' => $app->avanceAplicativo, // Cálculo del avance total del aplicativo
             ];
         });
 
@@ -75,11 +76,9 @@ class AplicativoController extends Controller
         // Informacion detallada del aplicativo
         $detalles = $aplicativo->map(function ($app) {
             return [
-                'fecha_inicio' => $app->fecha_inicio,
-                'fecha_fin' => $app->fecha_fin,
+                'descripcion' => $app->descripcion,
                 'pap' => $app->pap,
                 'estatus' => $app->estatus,
-                'responsable' => $app->responsable,
                 'lenguajes_frontend' => $app->lenguajes_frontend,
                 'lenguajes_backend' => $app->lenguajes_backend,
                 'bases_datos' => $app->bases_datos,
@@ -90,7 +89,7 @@ class AplicativoController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
-                'detalle_aplicativo' => $detalles,
+                'detalles' => $detalles,
             ]
         ]);
     }
@@ -114,7 +113,7 @@ class AplicativoController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Aplicativo actualizado exitosamente',
-            'data' => $aplicativo
+            'data' => $aplicativo,
         ]);
     }
 

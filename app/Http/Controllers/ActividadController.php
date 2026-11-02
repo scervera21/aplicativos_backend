@@ -45,7 +45,7 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad creada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            //'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
+            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
         ], 201);
     }
 
@@ -92,7 +92,43 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad actualizada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            //'nuevo_avance_aplicativo' => $actividad->aplicativo->avance_total
+            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
+        ]);
+    }
+
+    // Metodo para actualizacion de porcentaje en tiempo real
+
+    public function updatePorcentaje(Request $request, $actividadID)
+    {
+        // Validación estricta del rango permitido para el porcentaje
+        $request->validate([
+            'porcentaje' => 'required|integer|min:0|max:100'
+        ]);
+
+        $actividad = Actividad::find($actividadID);
+
+        if (!$actividad) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Actividad no encontrada'
+            ], 404);
+        }
+
+        // Asignar el porcentaje disparará automáticamente el mutator/lógica del modelo 
+        // para cambiar el estado 'completado' a true si llega al 100%.
+        $actividad->porcentaje = $request->porcentaje;
+        $actividad->save();
+
+        // Obtenemos el aplicativo padre para recalcular el avance total automáticamente
+        $aplicativo = $actividad->aplicativo;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Porcentaje actualizado correctamente',
+            'data' => [
+                'actividad' => $actividad,
+                'nuevo_avance_aplicativo' => $aplicativo ? $aplicativo->avanceAplicativo : 0
+            ]
         ]);
     }
 
@@ -113,7 +149,7 @@ class ActividadController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Actividad eliminada exitosamente',
-            //'nuevo_avance_aplicativo' => $aplicativo->avance_total
+            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
         ]);
     }
 }

@@ -74,7 +74,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/roles/{roleID}/permisos', [RolePermissionController::class, 'show'])
             ->middleware('permission:ver.roles');
         
-        Route::match(['put', 'patch'], '/roles/{roleID}/update', [RolePermissionController::class, 'update'])
+        Route::match(['put', 'patch'], '/roles/{roleID}/update-rol', [RolePermissionController::class, 'update'])
             ->middleware('permission:gestionar.roles');
         
         Route::delete('/roles/{roleID}', [RolePermissionController::class, 'destroy'])
@@ -92,7 +92,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/usuarios/create-user', [UserController::class, 'store'])
             ->middleware('permission:gestionar.usuarios');
         
-        Route::match(['put', 'patch'], '/usuarios/{userID}/update', [UserController::class, 'update'])
+        Route::match(['put', 'patch'], '/usuarios/{userID}/update-usuario', [UserController::class, 'update'])
             ->middleware('permission:gestionar.usuarios');
         
         Route::delete('/usuarios/{userID}', [UserController::class, 'destroy'])
@@ -106,7 +106,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/gerencias', [GerenciaController::class, 'index']);        
         Route::post('/gerencias/create-gerencia', [GerenciaController::class, 'store']);        
-        Route::match(['put', 'patch'], '/gerencias/{gerenciaID}/update', [GerenciaController::class, 'update']);        
+        Route::match(['put', 'patch'], '/gerencias/{gerenciaID}/update-gerencia', [GerenciaController::class, 'update']);        
         Route::delete('/gerencias/{gerenciaID}', [GerenciaController::class, 'destroy']);
 
         /*
@@ -121,7 +121,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/actividades/create-actividad', [ActividadController::class, 'store'])
             ->middleware('permission:gestionar.actividades');
         
-        Route::match(['put', 'patch'], '/actividades/{actividadID}/update', [ActividadController::class, 'update'])
+        Route::match(['put', 'patch'], '/actividades/{actividadID}/update-actividad', [ActividadController::class, 'update'])
+            ->middleware('permission:gestionar.actividades');
+
+        // Ruta especializada para modificar porcentajes en tiempo real
+        Route::put('/actividades/{actividadID}/porcentaje', [ActividadController::class, 'updatePorcentaje'])
             ->middleware('permission:gestionar.actividades');
         
         Route::delete('/actividades/{actividadID}', [ActividadController::class, 'destroy'])
@@ -142,7 +146,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/aplicativos/{aplicativoID}/detalles', [AplicativoController::class, 'show'])
             ->middleware('permission:ver.aplicativos');
         
-        Route::match(['put', 'patch'], '/aplicativos/{aplicativoID}/update', [AplicativoController::class, 'update'])
+        Route::match(['put', 'patch'], '/aplicativos/{aplicativoID}/update-aplicativo', [AplicativoController::class, 'update'])
             ->middleware('permission:gestionar.aplicativos');
         
         Route::delete('/aplicativos/{aplicativoID}', [AplicativoController::class, 'destroy'])
