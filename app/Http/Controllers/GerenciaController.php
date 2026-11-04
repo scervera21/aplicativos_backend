@@ -22,7 +22,7 @@ class GerenciaController extends Controller
     {
         $validatedData = $request->validate([
             'nombre_gerencia' => 'required|string|max:80',
-            'sigla' => 'required|string|max:10|unique:gerencias,sigla'
+            'sigla' => 'string|max:10|unique:gerencias,sigla'
         ]);
 
         $gerencia = Gerencia::create($validatedData);

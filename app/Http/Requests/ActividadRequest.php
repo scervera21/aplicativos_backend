@@ -27,9 +27,9 @@ class ActividadRequest extends FormRequest
         $actividadId = $this->route('actividadID');
 
         return [
-            'nombre_actividad' => ['required', 'string', 'max:150', 'unique:public.actividades,nombre_actividad'.($actividadId ? ','.$actividadId : '')],
-            'aplicativo_id' => [$isPost ? 'required' : 'sometimes', 'exists:public.aplicativos,id'],
-            'area_id' => [$isPost ? 'required' : 'sometimes', 'exists:public.areas,id'],
+            'nombre_actividad' => ['required', 'string', 'max:150', 'unique:actividades,nombre_actividad'.($actividadId ? ','.$actividadId : '')],
+            'aplicativo_id' => [$isPost ? 'required' : 'sometimes', 'exists:aplicativos,id'],
+            'area_id' => [$isPost ? 'required' : 'sometimes', 'exists:areas,id'],
             'prioridad' => ['required', 'in:BAJA,MEDIA,ALTA'],
             'porcentaje' => ['sometimes', 'integer', 'between:0,100'],
             'fecha_creacion' => ['sometimes', 'date', 'before_or_equal:fecha_culminacion'],

@@ -74,23 +74,19 @@ class AplicativoController extends Controller
         }
 
         // Informacion detallada del aplicativo
-        $detalles = $aplicativo->map(function ($app) {
-            return [
-                'descripcion' => $app->descripcion,
-                'pap' => $app->pap,
-                'estatus' => $app->estatus,
-                'lenguajes_frontend' => $app->lenguajes_frontend,
-                'lenguajes_backend' => $app->lenguajes_backend,
-                'bases_datos' => $app->bases_datos,
-                'observaciones' => $app->observaciones,
-            ];
-        });
+        $detalles = [
+            'descripcion' => $aplicativo->descripcion,
+            'pap' => $aplicativo->pap,
+            'estatus' => $aplicativo->estatus,
+            'lenguajes_frontend' => $aplicativo->lenguajes_frontend,
+            'lenguajes_backend' => $aplicativo->lenguajes_backend,
+            'bases_datos' => $aplicativo->bases_datos,
+            'observaciones' => $aplicativo->observaciones,
+        ];
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'detalles' => $detalles,
-            ]
+            'data' => $detalles
         ]);
     }
 

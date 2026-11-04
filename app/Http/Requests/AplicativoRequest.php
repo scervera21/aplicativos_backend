@@ -27,7 +27,7 @@ class AplicativoRequest extends FormRequest
         $appId = $this->route('aplicativoID');
 
         return [
-            'nombre_aplicativo' => ['required', 'string', 'max:80', 'unique:public.aplicativos,nombre_aplicativo' . ($appId ? ',' . $appId : '')],
+            'nombre_aplicativo' => ['required', 'string', 'max:80', 'unique:aplicativos,nombre_aplicativo' . ($appId ? ',' . $appId : '')],
             'alias' => ['nullable', 'string', 'max:8'],
             'responsable' => ['nullable', 'string', 'max:50'],
             'pap' => ['boolean'],
