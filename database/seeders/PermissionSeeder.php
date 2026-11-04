@@ -18,11 +18,12 @@ class PermissionSeeder extends Seeder
 
         // Listado de módulos y sus permisos
         $modules = [
-            'dashboard' => ['ver'],
             'usuarios' => ['ver','gestionar'],
             'roles' => ['ver','gestionar'],
+            'gerencias' => ['ver','gestionar'],
             'aplicativos' => ['ver','gestionar'],
             'actividades' => ['ver','gestionar'],
+            'project-manager' => ['ver','gestionar'],
         ];
 
         foreach ($modules as $module => $permissions) {     // $variable => $value

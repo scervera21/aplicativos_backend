@@ -35,10 +35,15 @@ class RoleSeeder extends Seeder
         ]);
 
         $colaboradorPermissions = Permission::whereNotIn('name', [
-            'ver.usuarios', 
+            'ver.usuarios',
             'gestionar.usuarios', 
             'ver.roles', 
-            'gestionar.roles'
+            'gestionar.roles',
+            'ver.gerencias',
+            'gestionar.gerencias',
+            'gestionar.aplicativos',
+            'gestionar.actividades',
+            'gestionar.project-manager',
         ])->get();
 
         $colaborador_role->syncPermissions($colaboradorPermissions);
