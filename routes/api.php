@@ -68,6 +68,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/roles', [RolePermissionController::class, 'index'])
             ->middleware('permission:ver.roles');
         
+        Route::get('/roles/catalogo-permisos', [RolePermissionController::class, 'listaPermisos'])
+            ->middleware('permission:ver.roles');
+        
         Route::post('/roles/create-rol', [RolePermissionController::class, 'store'])
             ->middleware('permission:gestionar.roles');
         

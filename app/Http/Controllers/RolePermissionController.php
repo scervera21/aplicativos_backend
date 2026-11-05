@@ -15,7 +15,7 @@ class RolePermissionController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-        $this->middleware('permission:ver.roles')->only(['index', 'show']);
+        $this->middleware('permission:ver.roles')->only(['index', 'show', 'listaPermisos']);
         $this->middleware('permission:gestionar.roles')->only(['store', 'update', 'destroy']);
     }
 
@@ -56,8 +56,21 @@ class RolePermissionController extends Controller
             'permissions.*' => 'exists:permissions,name'
         ]);
 
+        $roleName = strtoupper($validatedData['name']);
+
+        // Ningún rol excepto ADMINISTRADOR puede tener todos los permisos
+        if ($roleName !== 'ADMINISTRADOR' && !empty($validatedData['permissions'])) {
+            $totalSystemPermissions = Permission::count();
+            if (count($validatedData['permissions']) >= $totalSystemPermissions) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Solo el rol ADMINISTRADOR tiene asignados todos los permisos'
+                ], 403);
+            }
+        }
+
         $role = Role::create([
-            'name' => strtoupper($validatedData['name']),
+            'name' => $roleName,
             'guard_name' => 'api'
         ]);
 
@@ -108,15 +121,36 @@ class RolePermissionController extends Controller
             ], 404);
         }
 
+        // Si el rol es administrador, no se puede editar
+        if ($role->name === 'administrador' || $role->name === 'ADMINISTRADOR') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se puede editar el rol ADMINISTRADOR'
+            ], 403);
+        }
+
         $validatedData = $request->validate([
             'name' => 'sometimes|string|max:50|unique:roles,name,' . $roleID,
             'permissions' => 'sometimes|array',
             'permissions.*' => 'exists:permissions,name'
         ]);
 
+        $targetName = isset($validatedData['name']) ? strtoupper($validatedData['name']) : $role->name;  
+
+        // Ningún rol excepto ADMINISTRADOR puede tener todos los permisos
+        if ($targetName !== 'ADMINISTRADOR' && isset($validatedData['permissions'])) {
+            $totalSystemPermissions = Permission::count();
+            if (count($validatedData['permissions']) >= $totalSystemPermissions) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Únicamente el rol ADMINISTRADOR puede tener asignados todos los permisos del sistema'
+                ], 422);
+            }
+        }
+
         // Actualizar nombre si viene en la petición
         if (isset($validatedData['name'])) {
-            $role->update(['name' => strtoupper($validatedData['name'])]);
+            $role->update(['name' => $targetName]);
         }
 
         // Sincronizar permisos si se enviaron
@@ -145,6 +179,7 @@ class RolePermissionController extends Controller
             ], 404);
         }
 
+        // Para validar que no se puede eliminar el rol con permisos de administrador
         if ($role->permissions()->get()->pluck('name')->toArray() == Permission::all()->pluck('name')->toArray()) {
             return response()->json([
                 'status' => 'error',

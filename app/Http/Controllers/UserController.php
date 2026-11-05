@@ -103,6 +103,14 @@ class UserController extends Controller
             ], 404);
         }
 
+        // Validar si el usuario es administrador
+        if ($user->hasRole('administrador')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se puede eliminar el administrador'
+            ], 403);
+        }
+
         $user->delete();
 
         return response()->json([
