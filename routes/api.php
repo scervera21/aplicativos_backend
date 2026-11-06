@@ -121,6 +121,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/actividades', [ActividadController::class, 'index'])
             ->middleware('permission:ver.actividades');
         
+        Route::get('/areas', function () {
+            return response()->json([
+                'status' => 'success',
+                'data' => \App\Models\Area::orderBy('id', 'asc')->get()
+            ]);
+        });
+        
         Route::post('/actividades/create-actividad', [ActividadController::class, 'store'])
             ->middleware('permission:gestionar.actividades');
         

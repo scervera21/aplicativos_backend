@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ActividadRequest extends FormRequest
 {
@@ -27,13 +28,13 @@ class ActividadRequest extends FormRequest
         $actividadId = $this->route('actividadID');
 
         return [
-            'nombre_actividad' => ['required', 'string', 'max:150', 'unique:actividades,nombre_actividad'.($actividadId ? ','.$actividadId : '')],
+            'nombre_actividad' => ['required', 'string', 'max:150', Rule::unique('actividades', 'nombre_actividad')->ignore($actividadId)],
             'aplicativo_id' => [$isPost ? 'required' : 'sometimes', 'exists:aplicativos,id'],
             'area_id' => [$isPost ? 'required' : 'sometimes', 'exists:areas,id'],
             'prioridad' => ['required', 'in:BAJA,MEDIA,ALTA'],
             'porcentaje' => ['sometimes', 'integer', 'between:0,100'],
-            'fecha_creacion' => ['sometimes', 'date', 'before_or_equal:fecha_culminacion'],
-            'fecha_culminacion' => ['nullable', 'date', 'after_or_equal:fecha_creacion'],
+            'fecha_creacion' => array_filter(['sometimes', 'date', $this->filled('fecha_culminacion') ? 'before_or_equal:fecha_culminacion' : null]),
+            'fecha_culminacion' => array_filter(['nullable', 'date', $this->filled('fecha_creacion') ? 'after_or_equal:fecha_creacion' : null]),
             'estado' => [$isPost ? 'required' : 'sometimes', 'in:PENDIENTE,ATRASADO,CULMINADO'],
             'completado' => [$isPost ? 'required' : 'sometimes', 'boolean'],
             'comentarios' => ['nullable', 'string'],

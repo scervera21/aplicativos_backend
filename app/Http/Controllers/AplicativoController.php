@@ -34,6 +34,7 @@ class AplicativoController extends Controller
                 'fecha_inicio' => $app->fecha_inicio,
                 'fecha_fin' => $app->fecha_fin,
                 'responsable' => $app->responsable,
+                'gerencia_id' => $app->gerencia_id,
                 'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
                 'avance_total' => $app->avanceAplicativo, // Cálculo del avance total del aplicativo
             ];
@@ -75,6 +76,7 @@ class AplicativoController extends Controller
 
         // Informacion detallada del aplicativo
         $detalles = [
+            'gerencia_id' => $aplicativo->gerencia_id,
             'descripcion' => $aplicativo->descripcion,
             'pap' => $aplicativo->pap,
             'estatus' => $aplicativo->estatus,

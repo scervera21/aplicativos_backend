@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AplicativoRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class AplicativoRequest extends FormRequest
         $appId = $this->route('aplicativoID');
 
         return [
-            'nombre_aplicativo' => ['required', 'string', 'max:80', 'unique:aplicativos,nombre_aplicativo' . ($appId ? ',' . $appId : '')],
+            'nombre_aplicativo' => ['required', 'string', 'max:80', Rule::unique('aplicativos', 'nombre_aplicativo')->ignore($appId)],
             'alias' => ['nullable', 'string', 'max:8'],
             'responsable' => ['nullable', 'string', 'max:50'],
             'pap' => ['boolean'],
@@ -36,8 +37,8 @@ class AplicativoRequest extends FormRequest
             'lenguajes_frontend' => ['nullable', 'string', 'max:50'],
             'lenguajes_backend' => ['nullable', 'string', 'max:50'],
             'bases_datos' => ['nullable', 'string', 'max:50'],
-            'fecha_inicio' => ['nullable', 'date', 'before:fecha_fin'],
-            'fecha_fin' => ['nullable', 'date', 'after:fecha_inicio'],
+            'fecha_inicio' => array_filter(['nullable', 'date', $this->filled('fecha_fin') ? 'before_or_equal:fecha_fin' : null]),
+            'fecha_fin' => array_filter(['nullable', 'date', $this->filled('fecha_inicio') ? 'after_or_equal:fecha_inicio' : null]),
             'observaciones' => ['nullable', 'string'],
             'gerencia_id' => [$isPost ? 'required' : 'sometimes', 'exists:gerencias,id']
         ];
