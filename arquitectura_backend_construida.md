@@ -43,7 +43,7 @@
       if ($totalActividades === 0) return 0;
 
       $sumaPorcentajes = $this->actividades()->sum('porcentaje');
-      return (int) round($sumaPorcentajes / $totalActividades, 2);
+      return round($sumaPorcentajes / $totalActividades, 2);
   }
   ```
 

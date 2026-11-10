@@ -33,7 +33,7 @@ class RolePermissionController extends Controller
     }
 
     /**
-     * Listar el catálogo general de permisos (Útil para marcar casillas en la interfaz). (GET /api/roles/permisos)
+     * Listar el catálogo general de permisos (Útil para marcar casillas en la interfaz).
      */
     public function listaPermisos() 
     {
@@ -91,15 +91,16 @@ class RolePermissionController extends Controller
      */
     public function show($roleID)
     {
-        // Buscar el rol especificado y extraer solo el nombre de los permisos que tiene
-        $permissionsOfRole = Role::find($roleID)->permissions->pluck('name');
+        $role = Role::find($roleID);
 
-        if (!$permissionsOfRole) {
+        if (!$role) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Rol no encontrado'
             ], 404);
         }
+
+        $permissionsOfRole = $role->permissions->pluck('name');
 
         return response()->json([
             'status' => 'success',
@@ -179,8 +180,8 @@ class RolePermissionController extends Controller
             ], 404);
         }
 
-        // Para validar que no se puede eliminar el rol con permisos de administrador
-        if ($role->permissions()->get()->pluck('name')->toArray() == Permission::all()->pluck('name')->toArray()) {
+        // Para validar que no se puede eliminar el rol con permisos de administrador o llamado ADMINISTRADOR
+        if ($role->name === 'ADMINISTRADOR' || $role->permissions()->get()->pluck('name')->toArray() == Permission::all()->pluck('name')->toArray()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No se puede eliminar el rol con permisos de administrador'

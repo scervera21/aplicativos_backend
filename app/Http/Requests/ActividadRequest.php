@@ -36,7 +36,7 @@ class ActividadRequest extends FormRequest
             'fecha_creacion' => array_filter(['sometimes', 'date', $this->filled('fecha_culminacion') ? 'before_or_equal:fecha_culminacion' : null]),
             'fecha_culminacion' => array_filter(['nullable', 'date', $this->filled('fecha_creacion') ? 'after_or_equal:fecha_creacion' : null]),
             'estado' => [$isPost ? 'required' : 'sometimes', 'in:PENDIENTE,ATRASADO,CULMINADO'],
-            'completado' => [$isPost ? 'required' : 'sometimes', 'boolean'],
+            'completado' => ['sometimes', 'boolean'],
             'comentarios' => ['nullable', 'string'],
             'gerencias_colaboradoras' => ['nullable', 'array'],
             'gerencias_colaboradoras.*' => ['nullable', 'exists:gerencias,id'],

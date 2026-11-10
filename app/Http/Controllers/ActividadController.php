@@ -45,7 +45,7 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad creada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
+            'nuevo_avance_aplicativo' => $actividad->aplicativo ? $actividad->aplicativo->avance_total : 0.0
         ], 201);
     }
 
@@ -92,7 +92,7 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Actividad actualizada exitosamente',
             'data' => $actividad->load(['area', 'gerenciasColaboradoras']),
-            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
+            'nuevo_avance_aplicativo' => $actividad->aplicativo ? $actividad->aplicativo->avance_total : 0.0
         ]);
     }
 
@@ -126,8 +126,8 @@ class ActividadController extends Controller
             'status' => 'success',
             'message' => 'Porcentaje actualizado correctamente',
             'data' => [
-                'actividad' => $actividad,
-                'nuevo_avance_aplicativo' => $aplicativo ? $aplicativo->avanceAplicativo : 0
+                'actividad' => $actividad->load(['area', 'gerenciasColaboradoras']),
+                'nuevo_avance_aplicativo' => $aplicativo ? $aplicativo->avance_total : 0.0
             ]
         ]);
     }
@@ -143,13 +143,13 @@ class ActividadController extends Controller
             ], 404);
         }
 
-        //$aplicativo = $actividad->aplicativo;
+        $aplicativo = $actividad->aplicativo;
         $actividad->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Actividad eliminada exitosamente',
-            'nuevo_avance_aplicativo' => $actividad->aplicativo->avanceAplicativo
+            'nuevo_avance_aplicativo' => $aplicativo ? $aplicativo->avance_total : 0.0
         ]);
     }
 }

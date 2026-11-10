@@ -27,6 +27,12 @@ class Aplicativo extends Model
         'gerencia_id'
     ];
 
+    protected $appends = [
+        'avance_total',
+        'avance_pendiente',
+        'metricas_actividades',
+    ];
+
     public function gerencia()
     {
         return $this->belongsTo(Gerencia::class, 'gerencia_id');   // Un aplicativo pertenece a una gerencia
@@ -37,42 +43,77 @@ class Aplicativo extends Model
         return $this->hasMany(Actividad::class);            // Un aplicativo tiene muchas actividades
     }
 
-    // MÉTODO PARA CALCULAR EL PORCENTAJE DE AVANCE DEL APLICATIVO
-
-    public function AvanceTotalAplicativo()
+    /**
+     * Accessor para el porcentaje de avance total del aplicativo (0 - 100).
+     */
+    public function getAvanceTotalAttribute(): float
     {
         $totalActividades = $this->actividades()->count();
-        if ($totalActividades === 0) return 0;
+        if ($totalActividades === 0) {
+            return 0.0;
+        }
 
-        $sumaPorcentaje = $this->actividades()->sum('porcentaje');
-        $avanceAplicativo = round(($sumaPorcentaje / $totalActividades), 2);
-        return (int) $avanceAplicativo;
+        $sumaPorcentaje = (float) $this->actividades()->sum('porcentaje');
+        return round($sumaPorcentaje / $totalActividades, 2);
     }
 
-    // MÉTODO PARA CALCULAR EL PORCENTAJE PENDIENTE DEL APLICATIVO
-
-    public function PorcentajePendiente()
+    /**
+     * Alias para compatibilidad con llamadas previas a avanceAplicativo.
+     */
+    public function getAvanceAplicativoAttribute(): float
     {
-        return (int) (1 - $this->AvanceTotalAplicativo()); //Retorna el porcentaje pendiente del aplicativo en entero
+        return $this->getAvanceTotalAttribute();
     }
 
-    // TOTALES DE ACTIVIDADES POR ESTADO
-
-    public function TotalActividadesPendientes()
+    /**
+     * Accessor para el porcentaje de avance pendiente del aplicativo (0 - 100).
+     */
+    public function getAvancePendienteAttribute(): float
     {
-        $pendientes = $this->actividades()->where('estado', 'Sin Estatus')->orWhere('estado', 'Pendiente')->count();
-        return $pendientes;
+        return round(100.0 - $this->avance_total, 2);
     }
 
-    public function TotalActividadesCulminadas()
+    /**
+     * Accessor para métricas agregadas de actividades.
+     */
+    public function getMetricasActividadesAttribute(): array
     {
-        $culminadas = $this->actividades()->where('completado', true)->count(); //Retorna el total de actividades culminadas
-        return $culminadas;
+        return [
+            'total' => $this->actividades()->count(),
+            'culminadas' => $this->actividades()->where('completado', true)->count(),
+            'pendientes' => $this->actividades()->where('estado', 'PENDIENTE')->count(),
+            'atrasadas' => $this->actividades()->where('estado', 'ATRASADO')->count(),
+        ];
     }
 
-    public function TotalActividadesAtrasadas()
+    // Métodos para mantener compatibilidad hacia atrás
+    public function AvanceTotalAplicativo(): float
     {
-        $atrasadas = $this->actividades()->where('estado', 'Atrasado')->count();
-        return $atrasadas;
+        return $this->avance_total;
+    }
+
+    public function PorcentajePendiente(): float
+    {
+        return $this->avance_pendiente;
+    }
+
+    public function TotalActividadesPendientes(): int
+    {
+        return $this->actividades()
+            ->where(function ($query) {
+                $query->where('estado', 'PENDIENTE')
+                      ->orWhere('estado', 'Sin Estatus');
+            })
+            ->count();
+    }
+
+    public function TotalActividadesCulminadas(): int
+    {
+        return $this->actividades()->where('completado', true)->count();
+    }
+
+    public function TotalActividadesAtrasadas(): int
+    {
+        return $this->actividades()->where('estado', 'ATRASADO')->count();
     }
 }

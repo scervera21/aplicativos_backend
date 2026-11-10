@@ -27,12 +27,12 @@ class UserSeeder extends Seeder
             $this->command->error('No existen roles registrados, por favor ejecuta RoleSeeder primero.');
             return;
         } else {
-            $admin_role = Role::where('name', 'administrador')->first();
-            $colaborador_role = Role::where('name', 'colaborador')->first();
+            $admin_role = Role::where('name', 'ADMINISTRADOR')->first();
+            $colaborador_role = Role::where('name', 'COLABORADOR')->first();
         }
 
         $admin = User::firstOrCreate(
-            ['username' => 'Admin User'],
+            ['username' => 'admin'],
             [
                 'username' => 'admin',
                 'first_name' => 'admin',
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
         $admin->assignRole($admin_role);
 
         $user = User::firstOrCreate(
-            ['username' => 'Colaborador User'],
+            ['username' => 'colaborador'],
             [
                 'username' => 'colaborador',
                 'first_name' => 'colaborador',

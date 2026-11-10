@@ -21,7 +21,7 @@ class RoleSeeder extends Seeder
 
         // Rol Administrador
         $admin_role = Role::firstOrCreate([
-            'name' => 'administrador',
+            'name' => 'ADMINISTRADOR',
             'guard_name' => 'api',
         ]);
 
@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
         // Rol Colaborador
         
         $colaborador_role = Role::firstOrCreate([
-            'name' => 'colaborador',
+            'name' => 'COLABORADOR',
             'guard_name' => 'api',
         ]);
 

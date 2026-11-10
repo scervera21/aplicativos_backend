@@ -8,6 +8,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\AplicativoController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\ActividadController;
+use App\Http\Controllers\ProjectManagerController;
 
 
 /*
@@ -30,7 +31,6 @@ Route::prefix('v1')->group(function () {
     | Endpoints accesibles sin token previo (utilizados en la vista de Login).
     */
     Route::prefix('auth')->group(function () {
-        // Inicio de sesión: recibe username y password, devuelve JWT + datos del usuario
         Route::post('/login', [AuthController::class, 'login']);
     });
 
@@ -91,7 +91,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/usuarios', [UserController::class, 'index'])
             ->middleware('permission:ver.usuarios');
-        
+
         Route::post('/usuarios/create-user', [UserController::class, 'store'])
             ->middleware('permission:gestionar.usuarios');
         
@@ -107,10 +107,14 @@ Route::prefix('v1')->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::get('/gerencias', [GerenciaController::class, 'index']);        
-        Route::post('/gerencias/create-gerencia', [GerenciaController::class, 'store']);        
-        Route::match(['put', 'patch'], '/gerencias/{gerenciaID}/update-gerencia', [GerenciaController::class, 'update']);        
-        Route::delete('/gerencias/{gerenciaID}', [GerenciaController::class, 'destroy']);
+        Route::get('/gerencias', [GerenciaController::class, 'index'])
+            ->middleware('permission:ver.gerencias');
+        Route::post('/gerencias/create-gerencia', [GerenciaController::class, 'store'])
+            ->middleware('permission:gestionar.gerencias');
+        Route::match(['put', 'patch'], '/gerencias/{gerenciaID}/update-gerencia', [GerenciaController::class, 'update'])
+            ->middleware('permission:gestionar.gerencias');
+        Route::delete('/gerencias/{gerenciaID}', [GerenciaController::class, 'destroy'])
+            ->middleware('permission:gestionar.gerencias');
 
         /*
         |----------------------------------------------------------------------
@@ -161,5 +165,29 @@ Route::prefix('v1')->group(function () {
         
         Route::delete('/aplicativos/{aplicativoID}', [AplicativoController::class, 'destroy'])
             ->middleware('permission:gestionar.aplicativos');
+
+        /*
+        |----------------------------------------------------------------------
+        | Módulo: Project Manager (/api/v1/project-manager)
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('project-manager')->group(function () {
+            // Resumen general de todos los aplicativos
+            Route::get('/resumen', [ProjectManagerController::class, 'resumen'])
+                ->middleware('permission:ver.project-manager');
+
+            // Vista detallada del project manager de un aplicativo específico
+            Route::get('/aplicativos/{aplicativoID}', [ProjectManagerController::class, 'show'])
+                ->middleware('permission:ver.project-manager');
+
+            // Actualización del checklist (marcar completado 100% o desmarcar)
+            Route::match(['put', 'patch'], '/actividades/{actividadID}/checklist', [ProjectManagerController::class, 'updateChecklist'])
+                ->middleware('permission:gestionar.project-manager');
+
+            // Actualización del porcentaje desde Project Manager
+            Route::put('/actividades/{actividadID}/porcentaje', [ProjectManagerController::class, 'updatePorcentaje'])
+                ->middleware('permission:gestionar.project-manager');
+        });
     });
 });

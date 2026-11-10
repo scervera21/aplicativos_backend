@@ -7,6 +7,12 @@ use App\Models\Gerencia;
 
 class GerenciaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('permission:ver.gerencias')->only(['index']);
+        $this->middleware('permission:gestionar.gerencias')->only(['store', 'update', 'destroy']);
+    }
 
     public function index()
     {
@@ -22,7 +28,7 @@ class GerenciaController extends Controller
     {
         $validatedData = $request->validate([
             'nombre_gerencia' => 'required|string|max:80',
-            'sigla' => 'string|max:10|unique:gerencias,sigla'
+            'sigla' => 'nullable|string|max:10|unique:gerencias,sigla'
         ]);
 
         $gerencia = Gerencia::create($validatedData);

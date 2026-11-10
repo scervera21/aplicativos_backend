@@ -36,7 +36,7 @@ class AplicativoController extends Controller
                 'responsable' => $app->responsable,
                 'gerencia_id' => $app->gerencia_id,
                 'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
-                'avance_total' => $app->avanceAplicativo, // Cálculo del avance total del aplicativo
+                'avance_total' => $app->avance_total, // Cálculo del avance total del aplicativo
             ];
         });
 

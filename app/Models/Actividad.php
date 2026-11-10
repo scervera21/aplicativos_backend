@@ -26,6 +26,9 @@ class Actividad extends Model
 
     protected $casts = [
         'completado' => 'boolean',
+        'porcentaje' => 'integer',
+        'area_id' => 'integer',
+        'aplicativo_id' => 'integer',
     ];
 
     public function aplicativo()
@@ -43,19 +46,29 @@ class Actividad extends Model
         return $this->belongsToMany(Gerencia::class, 'colaboradores', 'actividad_id', 'gerencia_id'); // Una actividad puede tener muchas gerencias colaboradoras
     }
 
-    // Si llega a 100, completado pasa a true de forma automática
-    // Actualiza el estado a Culminado cuando el porcentaje llega a 100
-    // Actualiza la fecha de culminación cuando el porcentaje llega a 100
+    /**
+     * Mutator para asegurar lógica del Project Manager:
+     * - Rango estricto [0, 100].
+     * - Si llega a 100: completado = true, estado = 'CULMINADO', fecha_culminacion hoy.
+     * - Si es menor a 100: completado = false, fecha_culminacion null, y si era CULMINADO revierte a PENDIENTE.
+     */
+    public function setPorcentajeAttribute($value)
+    {
+        $val = max(0, min(100, (int) $value));
+        $this->attributes['porcentaje'] = $val;
 
-    public function setPorcentajeAttribute($value) {
-        $this->attributes['porcentaje'] = $value;
-        if ($value == 100) {
+        if ($val === 100) {
             $this->attributes['completado'] = true;
-            $this->attributes['estado'] = 'Culminado';
+            $this->attributes['estado'] = 'CULMINADO';
             $this->attributes['fecha_culminacion'] = now()->format('Y-m-d');
         } else {
             $this->attributes['completado'] = false;
             $this->attributes['fecha_culminacion'] = null;
+
+            $currentEstado = strtoupper($this->attributes['estado'] ?? '');
+            if ($currentEstado === 'CULMINADO') {
+                $this->attributes['estado'] = 'PENDIENTE';
+            }
         }
     }
 }

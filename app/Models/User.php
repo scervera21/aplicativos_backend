@@ -97,9 +97,11 @@ class User extends Authenticatable implements JWTSubject
     {
        $this->increment('failed_login_attempts');
 
-       // Lock account after N failed attempts
-        if ($this->failed_login_attempts >= env('APP_LOGIN_ATTEMPTS')) {
-            $this->update(['locked_until' => now()->addMinutes(env('APP_LOGIN_ATTEMPTS_LOCKOUT_MINUTES'))]);
+       // Bloquear la cuenta tras intentos fallidos
+        $maxAttempts = (int) (config('auth.login_attempts') ?? env('APP_LOGIN_ATTEMPTS', 5));
+        $lockoutMinutes = (int) (config('auth.login_lockout_minutes') ?? env('APP_LOGIN_ATTEMPTS_LOCKOUT_MINUTES', 15));
+        if ($this->failed_login_attempts >= $maxAttempts) {
+            $this->update(['locked_until' => now()->addMinutes($lockoutMinutes)]);
             $this->update(['is_active' => false]);
         }
     }

@@ -5,6 +5,9 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -28,6 +31,7 @@ class Handler extends ExceptionHandler
         $this->renderable(function (ValidationException $e, $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
+                    'status' => 'error',
                     'message' => 'Los datos proporcionados no son válidos.',
                     'errors' => $e->errors(),
                 ], 422);
@@ -37,8 +41,36 @@ class Handler extends ExceptionHandler
         $this->renderable(function (AuthenticationException $e, $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Usuario no Authenticado'
+                    'status' => 'error',
+                    'message' => 'Usuario no autenticado'
                 ], 401);
+            }
+        });
+
+        $this->renderable(function (UnauthorizedException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No tienes los permisos necesarios para realizar esta acción'
+                ], 403);
+            }
+        });
+
+        $this->renderable(function (ModelNotFoundException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Recurso no encontrado'
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Ruta o recurso no encontrado'
+                ], 404);
             }
         });
 
