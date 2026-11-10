@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre_aplicativo',80)->unique();
             $table->string('alias',8)->nullable();
             $table->boolean('pap')->default(false);
-            $table->string('estatus',30)->default('Sin Estatus');
+            $table->string('estatus',30)->nullable()->default('Sin Estatus');
             $table->string('descripcion',200)->nullable();
             $table->string('responsable',50)->nullable();
             $table->string('lenguajes_frontend', 50)->nullable();

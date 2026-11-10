@@ -38,6 +38,7 @@ class UserRequest extends FormRequest
             'email'         => [
                 $isPost ? 'required' : 'sometimes',
                 'email',
+                'regex:/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,8}$/i',
                 'max:100',
                 Rule::unique(User::class, 'email')->ignore($userID)
             ],
@@ -62,6 +63,7 @@ class UserRequest extends FormRequest
             'last_name.regex' => 'El apellido solo debe contener letras, espacios y acentos.',
             'last_name.max' => 'El apellido debe tener como máximo 30 caracteres.',
             'email.required' => 'El correo electrónico es obligatorio.',
+            'email.regex' => 'El correo electrónico debe ser un correo electrónico válido.',
             'email.unique' => 'El correo electrónico ya existe.',
             'email.email' => 'El correo electrónico debe ser un correo electrónico válido.',
             'email.max' => 'El correo electrónico debe tener como máximo 100 caracteres.',

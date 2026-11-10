@@ -32,7 +32,7 @@ class AplicativoRequest extends FormRequest
             'alias' => ['nullable', 'string', 'max:8'],
             'responsable' => ['nullable', 'string', 'max:50'],
             'pap' => ['boolean'],
-            'estatus' => ['string', 'max:30'],
+            'estatus' => ['max:30'],
             'descripcion' => ['nullable', 'string', 'max:200'],
             'lenguajes_frontend' => ['nullable', 'string', 'max:50'],
             'lenguajes_backend' => ['nullable', 'string', 'max:50'],
