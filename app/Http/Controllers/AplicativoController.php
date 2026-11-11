@@ -27,6 +27,10 @@ class AplicativoController extends Controller
 
         // Informacion principal de los aplicativos
         $data = $aplicativos->map(function ($app) {
+            $sigla = !empty($app->gerencia?->sigla) ? trim($app->gerencia->sigla) : null;
+            $nombre = !empty($app->gerencia?->nombre_gerencia) ? trim($app->gerencia->nombre_gerencia) : null;
+            $gerenciaDisplay = $sigla ?: ($nombre ?: "No posee");
+
             return [
                 'id' => $app->id,
                 'nombre_aplicativo' => $app->nombre_aplicativo,
@@ -35,7 +39,14 @@ class AplicativoController extends Controller
                 'fecha_fin' => $app->fecha_fin,
                 'responsable' => $app->responsable,
                 'gerencia_id' => $app->gerencia_id,
-                'gerencia_responsable' => $app->gerencia->nombre_gerencia ?? "No posee",
+                'gerencia_responsable' => $gerenciaDisplay,
+                'gerencia_sigla' => $sigla,
+                'gerencia_nombre' => $nombre,
+                'gerencia' => $app->gerencia ? [
+                    'id' => $app->gerencia->id,
+                    'nombre_gerencia' => $app->gerencia->nombre_gerencia,
+                    'sigla' => $app->gerencia->sigla,
+                ] : null,
                 'avance_total' => $app->avance_total, // Cálculo del avance total del aplicativo
             ];
         });
